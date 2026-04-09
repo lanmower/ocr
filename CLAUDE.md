@@ -8,7 +8,8 @@ Rust batch OCR pipeline for bank statement processing with Gemini AI post-proces
 - `src/models.rs` — ONNX model auto-download from S3
 - `src/pdf.rs` — PDF to image rendering via pdfium-render
 - `src/ocr.rs` — OCR engine wrapper around ocrs (rten-based)
-- `src/gemini.rs` — Gemini API integration (gcloud auth or API key)
+- `src/llm.rs` — Ollama LLM integration with chunking for CSV extraction
+- `src/drive.rs` — Google Drive/Sheets upload via gcloud auth
 - `src/parse.rs` — Text output utilities
 - `src/pipeline.rs` — Batch processing with rayon parallelism
 
@@ -35,13 +36,15 @@ cargo build --release
 
 - pdfium library (pdfium.dll) must be in executable directory or system PATH
 - ONNX models auto-downloaded on first run to `./models/` next to executable
+- Ollama running locally (`ollama serve`) with a model pulled
 
 ## Usage
 
 ```
 ocr --input ./statements --output ./results --format csv
 ocr --input ./statements --output ./results --format text
-ocr --input ./statements --format csv --model gemini-2.5-flash
+ocr --input ./statements --format csv --model gemma4:e4b
+ocr --input ./statements --format csv --sheets
 ```
 
 ## Output Formats
