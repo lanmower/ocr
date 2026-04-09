@@ -1,4 +1,3 @@
-mod drive;
 mod llm;
 mod models;
 mod ocr;
@@ -31,8 +30,6 @@ struct Cli {
     #[arg(long, default_value = "gemma4:e4b")]
     model: String,
 
-    #[arg(long, help = "Upload CSV results to Google Sheets")]
-    sheets: bool,
 }
 
 fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
@@ -63,7 +60,6 @@ fn main() -> Result<()> {
         cli.format,
         engine,
         &cli.model,
-        cli.sheets,
     );
 
     let ok = results.iter().filter(|r| r.is_ok()).count();
