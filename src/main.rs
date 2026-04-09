@@ -1,3 +1,4 @@
+mod gemini;
 mod models;
 mod ocr;
 mod parse;
@@ -25,6 +26,9 @@ struct Cli {
 
     #[arg(long)]
     model_dir: Option<PathBuf>,
+
+    #[arg(long, default_value = "gemini-2.5-flash")]
+    model: String,
 }
 
 fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
@@ -38,7 +42,7 @@ fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    eprintln!("Loading models...");
+    eprintln!("Loading OCR models...");
     let (detect, rec) = models::ensure_models(cli.model_dir.as_deref())?;
     let engine = ocr::create_engine(&detect, &rec)?;
 
@@ -54,6 +58,7 @@ fn main() -> Result<()> {
         cli.dpi,
         cli.format,
         engine,
+        &cli.model,
     );
 
     let ok = results.iter().filter(|r| r.is_ok()).count();

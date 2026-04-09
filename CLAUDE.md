@@ -1,6 +1,6 @@
 # OCR Pipeline
 
-Rust batch OCR pipeline for bank statement processing.
+Rust batch OCR pipeline for bank statement processing with Gemini AI post-processing.
 
 ## Architecture
 
@@ -8,8 +8,18 @@ Rust batch OCR pipeline for bank statement processing.
 - `src/models.rs` — ONNX model auto-download from S3
 - `src/pdf.rs` — PDF to image rendering via pdfium-render
 - `src/ocr.rs` — OCR engine wrapper around ocrs (rten-based)
-- `src/parse.rs` — Heuristic text-to-CSV extraction (date/desc/amount)
+- `src/gemini.rs` — Gemini API integration (gcloud auth or API key)
+- `src/parse.rs` — Text output utilities
 - `src/pipeline.rs` — Batch processing with rayon parallelism
+
+## Auth (Gemini)
+
+Tries in order:
+1. `GEMINI_API_KEY` env var
+2. `gcloud auth application-default print-access-token`
+
+For gcloud: `gcloud auth application-default login` (one-time setup).
+For API key: get free key at https://aistudio.google.com/apikey
 
 ## Build
 
@@ -29,11 +39,12 @@ cargo build --release
 ## Usage
 
 ```
-ocr --input ./bank-statements --output ./results --dpi 300 --format csv
-ocr --input ./bank-statements --output ./results --format text
+ocr --input ./statements --output ./results --format csv
+ocr --input ./statements --output ./results --format text
+ocr --input ./statements --format csv --model gemini-2.5-flash
 ```
 
 ## Output Formats
 
-- `csv`: Attempts heuristic parsing of date/description/amount columns
-- `text`: Raw OCR text lines (for LLM post-processing)
+- `text` (default): Raw OCR text lines
+- `csv`: OCR text processed by Gemini into date,description,amount,balance CSV

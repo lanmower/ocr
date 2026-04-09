@@ -1,3 +1,4 @@
+use crate::gemini;
 use crate::ocr::Engine;
 use crate::parse;
 use crate::pdf;
@@ -19,6 +20,7 @@ pub struct Job {
     pub dpi: u32,
     pub format: OutputFormat,
     pub engine: Arc<Engine>,
+    pub model: String,
 }
 
 fn is_pdf(p: &Path) -> bool {
@@ -69,8 +71,9 @@ fn process_one(job: &Job) -> Result<PathBuf> {
     let mut file = std::fs::File::create(&out_path)?;
     match job.format {
         OutputFormat::Csv => {
-            let rows = parse::extract_rows(&all_lines);
-            parse::write_csv(&rows, &mut file)?;
+            let raw = all_lines.join("\n");
+            let csv_text = gemini::process_ocr_text(&raw, &job.model)?;
+            std::io::Write::write_all(&mut file, csv_text.as_bytes())?;
         }
         OutputFormat::Text => {
             parse::write_text(&all_lines, &mut file)?;
@@ -86,8 +89,10 @@ pub fn run_batch(
     dpi: u32,
     format: OutputFormat,
     engine: Arc<Engine>,
+    model: &str,
 ) -> Vec<Result<PathBuf>> {
     let format = Arc::new(format);
+    let model = model.to_string();
     std::fs::create_dir_all(output_dir).ok();
 
     inputs
@@ -99,6 +104,7 @@ pub fn run_batch(
                 dpi,
                 format: (*format).clone(),
                 engine: Arc::clone(&engine),
+                model: model.clone(),
             };
             let result = process_one(&job);
             match &result {
