@@ -1,0 +1,84 @@
+[
+  {
+    "id": "commit-drive-removal",
+    "subject": "Commit the drive.rs deletion and main/pipeline cleanup",
+    "status": "pending",
+    "description": "Stage and commit: deleted src/drive.rs, modified src/main.rs, modified src/pipeline.rs",
+    "effort": "small",
+    "category": "infra",
+    "blocking": [
+      "download-samples",
+      "build-release"
+    ],
+    "blockedBy": [],
+    "acceptance": [
+      "git status shows clean working tree after commit",
+      "commit pushed to origin/master"
+    ],
+    "edge_cases": []
+  },
+  {
+    "id": "download-samples",
+    "subject": "Download ~10 sample scanned bank statement PDFs to test-statements/",
+    "status": "pending",
+    "description": "Use curl/powershell via exec:bash to download publicly available sample bank statement PDFs. Create C:/dev/ocr/test-statements/ directory.",
+    "effort": "medium",
+    "category": "infra",
+    "blocking": [
+      "run-ocr-pipeline"
+    ],
+    "blockedBy": [
+      "commit-drive-removal"
+    ],
+    "acceptance": [
+      "test-statements/ contains at least 5 PDF files",
+      "files are non-zero size"
+    ],
+    "edge_cases": [
+      "some URLs may 404 — try multiple sources"
+    ]
+  },
+  {
+    "id": "build-release",
+    "subject": "Build release binary with correct rustup toolchain",
+    "status": "pending",
+    "description": "Run cargo build --release with PATH=C:/Users/user/.cargo/bin prepended and RUSTUP_TOOLCHAIN=stable to use rustc 1.94.1 not chocolatey 1.85.1",
+    "effort": "medium",
+    "category": "infra",
+    "blocking": [
+      "run-ocr-pipeline"
+    ],
+    "blockedBy": [
+      "commit-drive-removal"
+    ],
+    "acceptance": [
+      "target/release/ocr.exe exists and is recent",
+      "build completes with 0 errors"
+    ],
+    "edge_cases": [
+      "memchr pinned to 2.7.4 in Cargo.lock — must remain pinned"
+    ]
+  },
+  {
+    "id": "run-ocr-pipeline",
+    "subject": "Run OCR pipeline on sample PDFs in text mode and evaluate output",
+    "status": "pending",
+    "description": "Execute ocr.exe --input ./test-statements --output ./test-results --format text, inspect output files for OCR quality",
+    "effort": "medium",
+    "category": "feature",
+    "blocking": [],
+    "blockedBy": [
+      "download-samples",
+      "build-release"
+    ],
+    "acceptance": [
+      "test-results/ contains one .txt per PDF",
+      "OCR text contains recognizable banking terms (date/amount/balance)",
+      "no crashes or panics"
+    ],
+    "edge_cases": [
+      "pdfium.dll must be in PATH or next to exe",
+      "model files auto-downloaded on first run"
+    ]
+  }
+]

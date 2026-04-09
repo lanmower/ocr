@@ -1,4 +1,3 @@
-use crate::drive;
 use crate::llm;
 use crate::ocr::Engine;
 use crate::parse;
@@ -22,7 +21,6 @@ pub struct Job {
     pub format: OutputFormat,
     pub engine: Arc<Engine>,
     pub model: String,
-    pub upload: bool,
 }
 
 fn is_pdf(p: &Path) -> bool {
@@ -82,15 +80,6 @@ fn process_one(job: &Job) -> Result<PathBuf> {
         }
     }
 
-    if job.upload {
-        if let OutputFormat::Csv = job.format {
-            match drive::upload_as_sheet(&out_path) {
-                Ok(url) => eprintln!("[sheets] {}", url),
-                Err(e) => eprintln!("[sheets-err] {}: {:#}", out_path.display(), e),
-            }
-        }
-    }
-
     Ok(out_path)
 }
 
@@ -101,7 +90,6 @@ pub fn run_batch(
     format: OutputFormat,
     engine: Arc<Engine>,
     model: &str,
-    upload: bool,
 ) -> Vec<Result<PathBuf>> {
     let format = Arc::new(format);
     let model = model.to_string();
@@ -117,7 +105,6 @@ pub fn run_batch(
                 format: (*format).clone(),
                 engine: Arc::clone(&engine),
                 model: model.clone(),
-                upload,
             };
             let result = process_one(&job);
             match &result {
