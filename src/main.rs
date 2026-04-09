@@ -20,7 +20,7 @@ struct Cli {
     #[arg(long, default_value = "300")]
     dpi: u32,
 
-    #[arg(long, default_value = "csv", value_parser = parse_format)]
+    #[arg(long, default_value = "text", value_parser = parse_format)]
     format: pipeline::OutputFormat,
 
     #[arg(long)]
