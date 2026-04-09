@@ -1,4 +1,5 @@
-mod gemini;
+mod drive;
+mod llm;
 mod models;
 mod ocr;
 mod parse;
@@ -27,8 +28,11 @@ struct Cli {
     #[arg(long)]
     model_dir: Option<PathBuf>,
 
-    #[arg(long, default_value = "gemini-2.5-flash")]
+    #[arg(long, default_value = "gemma4:e4b")]
     model: String,
+
+    #[arg(long, help = "Upload CSV results to Google Sheets")]
+    sheets: bool,
 }
 
 fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
@@ -59,6 +63,7 @@ fn main() -> Result<()> {
         cli.format,
         engine,
         &cli.model,
+        cli.sheets,
     );
 
     let ok = results.iter().filter(|r| r.is_ok()).count();

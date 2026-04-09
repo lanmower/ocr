@@ -1,4 +1,5 @@
-use crate::gemini;
+use crate::drive;
+use crate::llm;
 use crate::ocr::Engine;
 use crate::parse;
 use crate::pdf;
@@ -21,6 +22,7 @@ pub struct Job {
     pub format: OutputFormat,
     pub engine: Arc<Engine>,
     pub model: String,
+    pub upload: bool,
 }
 
 fn is_pdf(p: &Path) -> bool {
@@ -72,11 +74,20 @@ fn process_one(job: &Job) -> Result<PathBuf> {
     match job.format {
         OutputFormat::Csv => {
             let raw = all_lines.join("\n");
-            let csv_text = gemini::process_ocr_text(&raw, &job.model)?;
+            let csv_text = llm::process_ocr_text(&raw, &job.model)?;
             std::io::Write::write_all(&mut file, csv_text.as_bytes())?;
         }
         OutputFormat::Text => {
             parse::write_text(&all_lines, &mut file)?;
+        }
+    }
+
+    if job.upload {
+        if let OutputFormat::Csv = job.format {
+            match drive::upload_as_sheet(&out_path) {
+                Ok(url) => eprintln!("[sheets] {}", url),
+                Err(e) => eprintln!("[sheets-err] {}: {:#}", out_path.display(), e),
+            }
         }
     }
 
@@ -90,6 +101,7 @@ pub fn run_batch(
     format: OutputFormat,
     engine: Arc<Engine>,
     model: &str,
+    upload: bool,
 ) -> Vec<Result<PathBuf>> {
     let format = Arc::new(format);
     let model = model.to_string();
@@ -105,6 +117,7 @@ pub fn run_batch(
                 format: (*format).clone(),
                 engine: Arc::clone(&engine),
                 model: model.clone(),
+                upload,
             };
             let result = process_one(&job);
             match &result {
