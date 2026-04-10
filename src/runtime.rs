@@ -7,8 +7,8 @@ use zip::ZipArchive;
 
 const VULKAN_ZIP: &str = "https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-vulkan-x64.zip";
 const CPU_ZIP: &str = "https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-cpu-x64.zip";
-const MODEL_URL: &str = "https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/google_gemma-4-E2B-it-Q4_K_M.gguf";
-const MMPROJ_URL: &str = "https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-f16.gguf";
+const MODEL_URL: &str = "https://github.com/lanmower/ocr/releases/download/latest/google_gemma-4-E2B-it-Q4_K_M.gguf";
+const MMPROJ_URL: &str = "https://github.com/lanmower/ocr/releases/download/latest/mmproj-google_gemma-4-E2B-it-f16.gguf";
 const MODEL_FILE: &str = "google_gemma-4-E2B-it-Q4_K_M.gguf";
 const MMPROJ_FILE: &str = "mmproj-google_gemma-4-E2B-it-f16.gguf";
 
