@@ -5,7 +5,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 const GH_BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
-const MODEL_FILE: &str = "google_gemma-4-E2B-it-Q4_K_M.gguf";
+const MODEL_SHARD1: &str = "model-00001-of-00002.gguf";
+const MODEL_SHARD2: &str = "model-00002-of-00002.gguf";
 const MMPROJ_FILE: &str = "mmproj-google_gemma-4-E2B-it-f16.gguf";
 
 const CLI_BYTES: &[u8] = include_bytes!(env!("LLAMA_CLI_PATH"));
@@ -60,13 +61,13 @@ pub fn ensure() -> Result<&'static Runtime> {
         extract(CLI_BYTES, &dir.join("llama-mtmd-cli.exe"))?;
         extract(DLL_BYTES, &dir.join("mtmd.dll"))?;
 
-        for file in [MODEL_FILE, MMPROJ_FILE] {
+        for file in [MODEL_SHARD1, MODEL_SHARD2, MMPROJ_FILE] {
             download(&format!("{GH_BASE}/{file}"), &dir.join(file))?;
         }
 
         Ok(Runtime {
             cli: dir.join("llama-mtmd-cli.exe"),
-            model: dir.join(MODEL_FILE),
+            model: dir.join(MODEL_SHARD1),
             mmproj: dir.join(MMPROJ_FILE),
         })
     })
