@@ -14,23 +14,29 @@ jobs:
       - name: Download llama.cpp vulkan zip
         run: curl -L -o llama-vulkan.zip https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-vulkan-x64.zip
       - name: Extract runtime binaries
+        shell: pwsh
         run: |
           Expand-Archive -Path llama-vulkan.zip -DestinationPath llama-vulkan-extracted -Force
-          New-Item -ItemType Directory -Force -Path bundle\llm-runtime
-          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter llama-mtmd-cli.exe).FullName bundle\llm-runtime\
-          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter mtmd.dll).FullName bundle\llm-runtime\
-        shell: pwsh
+          New-Item -ItemType Directory -Force -Path bundle/llm-runtime
+          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter llama-mtmd-cli.exe).FullName bundle/llm-runtime/
+          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter mtmd.dll).FullName bundle/llm-runtime/
       - name: Download model
-        run: curl -L -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" -o bundle\llm-runtime\google_gemma-4-E2B-it-Q4_K_M.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/google_gemma-4-E2B-it-Q4_K_M.gguf
         shell: pwsh
-      - name: Download mmproj
-        run: curl -L -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" -o bundle\llm-runtime\mmproj-google_gemma-4-E2B-it-f16.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-f16.gguf
-        shell: pwsh
-      - name: Assemble bundle
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          Copy-Item target\release\ocr.exe bundle\
-          Compress-Archive -Path bundle\* -DestinationPath ocr-bundle.zip -Force
+          curl -L -H "Authorization: Bearer $env:HF_TOKEN" -o bundle/llm-runtime/google_gemma-4-E2B-it-Q4_K_M.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/google_gemma-4-E2B-it-Q4_K_M.gguf
+      - name: Download mmproj
         shell: pwsh
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          curl -L -H "Authorization: Bearer $env:HF_TOKEN" -o bundle/llm-runtime/mmproj-google_gemma-4-E2B-it-f16.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-f16.gguf
+      - name: Assemble bundle
+        shell: pwsh
+        run: |
+          Copy-Item target/release/ocr.exe bundle/
+          Compress-Archive -Path bundle/* -DestinationPath ocr-bundle.zip -Force
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
