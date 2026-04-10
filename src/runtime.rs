@@ -5,12 +5,19 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 const GH_BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
-const MODEL_SHARD1: &str = "model-00001-of-00002.gguf";
-const MODEL_SHARD2: &str = "model-00002-of-00002.gguf";
+const MODEL_SHARD1: &str = "model-00001-of-00003.gguf";
+const MODEL_SHARD2: &str = "model-00002-of-00003.gguf";
+const MODEL_SHARD3: &str = "model-00003-of-00003.gguf";
 const MMPROJ_FILE: &str = "mmproj-google_gemma-4-E2B-it-f16.gguf";
 
-const CLI_BYTES: &[u8] = include_bytes!(env!("LLAMA_CLI_PATH"));
-const DLL_BYTES: &[u8] = include_bytes!(env!("MTMD_DLL_PATH"));
+const CLI_BYTES: &[u8] = include_bytes!(env!("LLAMA_LLAMA_MTMD_CLI_EXE"));
+const MTMD_DLL: &[u8] = include_bytes!(env!("LLAMA_MTMD_DLL"));
+const GGML_VULKAN: &[u8] = include_bytes!(env!("LLAMA_GGML_VULKAN_DLL"));
+const GGML_BASE: &[u8] = include_bytes!(env!("LLAMA_GGML_BASE_DLL"));
+const GGML_DLL: &[u8] = include_bytes!(env!("LLAMA_GGML_DLL"));
+const LLAMA_DLL: &[u8] = include_bytes!(env!("LLAMA_LLAMA_DLL"));
+const LIBOMP: &[u8] = include_bytes!(env!("LLAMA_LIBOMP140_X86_64_DLL"));
+const GGML_CPU: &[u8] = include_bytes!(env!("LLAMA_GGML_CPU_X64_DLL"));
 
 pub struct Runtime {
     pub cli: PathBuf,
@@ -59,9 +66,15 @@ pub fn ensure() -> Result<&'static Runtime> {
         std::fs::create_dir_all(&dir).context("create runtime dir")?;
 
         extract(CLI_BYTES, &dir.join("llama-mtmd-cli.exe"))?;
-        extract(DLL_BYTES, &dir.join("mtmd.dll"))?;
+        extract(MTMD_DLL, &dir.join("mtmd.dll"))?;
+        extract(GGML_VULKAN, &dir.join("ggml-vulkan.dll"))?;
+        extract(GGML_BASE, &dir.join("ggml-base.dll"))?;
+        extract(GGML_DLL, &dir.join("ggml.dll"))?;
+        extract(LLAMA_DLL, &dir.join("llama.dll"))?;
+        extract(LIBOMP, &dir.join("libomp140.x86_64.dll"))?;
+        extract(GGML_CPU, &dir.join("ggml-cpu-x64.dll"))?;
 
-        for file in [MODEL_SHARD1, MODEL_SHARD2, MMPROJ_FILE] {
+        for file in [MODEL_SHARD1, MODEL_SHARD2, MODEL_SHARD3, MMPROJ_FILE] {
             download(&format!("{GH_BASE}/{file}"), &dir.join(file))?;
         }
 

@@ -14,7 +14,7 @@ jobs:
       - name: Download llama-gguf-split
         shell: pwsh
         run: |
-          curl -L -o llama-vulkan.zip https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-vulkan-x64.zip
+          curl -L -o llama-vulkan.zip https://github.com/ggml-org/llama.cpp/releases/download/b8741/llama-b8741-bin-win-vulkan-x64.zip
           Expand-Archive -Path llama-vulkan.zip -DestinationPath llama-vulkan-extracted -Force
       - name: Download model and split
         shell: pwsh
@@ -41,6 +41,7 @@ jobs:
           name: Latest
           files: |
             target/release/ocr.exe
-            assets/model-00001-of-00002.gguf
-            assets/model-00002-of-00002.gguf
+            assets/model-00001-of-00003.gguf
+            assets/model-00002-of-00003.gguf
+            assets/model-00003-of-00003.gguf
             assets/mmproj-google_gemma-4-E2B-it-f16.gguf

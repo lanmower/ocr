@@ -2,14 +2,24 @@ use std::io::{self, Read};
 use std::fs::{self, File};
 use std::path::PathBuf;
 
-const VULKAN_ZIP: &str = "https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-vulkan-x64.zip";
+const VULKAN_ZIP: &str = "https://github.com/ggml-org/llama.cpp/releases/download/b8741/llama-b8741-bin-win-vulkan-x64.zip";
+
+const EXTRACT: &[&str] = &[
+    "llama-mtmd-cli.exe",
+    "mtmd.dll",
+    "ggml-vulkan.dll",
+    "ggml-base.dll",
+    "ggml.dll",
+    "llama.dll",
+    "libomp140.x86_64.dll",
+    "ggml-cpu-x64.dll",
+];
 
 fn main() {
     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap());
-    let cli = out.join("llama-mtmd-cli.exe");
-    let dll = out.join("mtmd.dll");
+    let all_present = EXTRACT.iter().all(|f| out.join(f).exists());
 
-    if !cli.exists() || !dll.exists() {
+    if !all_present {
         let zip_path = out.join("llama.zip");
         if !zip_path.exists() {
             eprintln!("build: downloading llama zip...");
@@ -25,22 +35,19 @@ fn main() {
         for i in 0..zip.len() {
             let mut entry = zip.by_index(i).unwrap();
             let name = entry.name().to_string();
-            let dest = if name.ends_with("llama-mtmd-cli.exe") {
-                Some(cli.clone())
-            } else if name.ends_with("mtmd.dll") {
-                Some(dll.clone())
-            } else {
-                None
-            };
-            if let Some(dest) = dest {
+            let fname = name.split('/').last().unwrap_or("");
+            if EXTRACT.contains(&fname) {
+                let dest = out.join(fname);
                 let mut buf = Vec::new();
                 entry.read_to_end(&mut buf).unwrap();
                 fs::write(&dest, buf).unwrap();
+                eprintln!("build: extracted {}", fname);
             }
         }
     }
 
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rustc-env=LLAMA_CLI_PATH={}", cli.display());
-    println!("cargo:rustc-env=MTMD_DLL_PATH={}", dll.display());
+    for f in EXTRACT {
+        println!("cargo:rustc-env=LLAMA_{}={}", f.replace('.', "_").replace('-', "_").to_uppercase(), out.join(f).display());
+    }
 }
