@@ -1,3 +1,9 @@
+## 0.7.0
+
+- Bundle all runtime files (ocr.exe + llama-mtmd-cli.exe + mtmd.dll + model GGUF + mmproj GGUF) into single ocr-bundle.zip release asset
+- CI downloads models from HuggingFace (HF_TOKEN secret) during build
+- runtime.rs fallback URLs updated to pull from GitHub release assets instead of HuggingFace
+
 ## 0.6.0
 
 - Add GitHub Actions CI workflow: builds ocr.exe on windows-latest, uploads as rolling `latest` release on every push to master
