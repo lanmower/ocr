@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Replace Ollama HTTP with llama-mtmd-cli subprocess (no daemon, no port)
+- Auto-detect GPU: downloads Vulkan zip (GPU) or CPU zip based on nvidia-smi/vulkaninfo
+- Auto-downloads llama.cpp b8740 + Gemma 4 E2B Q4_K_M GGUF + mmproj-f16 on first run
+- All runtime binaries/models stored in llm-runtime/ next to executable
+- Split llm.rs (inference) and runtime.rs (download/setup)
+
 ## 0.4.0
 
 - Replace two-step OCR→LLM pipeline with direct vision LLM processing
