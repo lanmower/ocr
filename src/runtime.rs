@@ -5,11 +5,11 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 const GH_BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
-const HF_BASE: &str = "https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main";
-const CLI_FILE: &str = "llama-mtmd-cli.exe";
-const DLL_FILE: &str = "mtmd.dll";
 const MODEL_FILE: &str = "google_gemma-4-E2B-it-Q4_K_M.gguf";
 const MMPROJ_FILE: &str = "mmproj-google_gemma-4-E2B-it-f16.gguf";
+
+const CLI_BYTES: &[u8] = include_bytes!(env!("LLAMA_CLI_PATH"));
+const DLL_BYTES: &[u8] = include_bytes!(env!("MTMD_DLL_PATH"));
 
 pub struct Runtime {
     pub cli: PathBuf,
@@ -22,6 +22,16 @@ static RT: OnceCell<Runtime> = OnceCell::new();
 fn exe_dir() -> Result<PathBuf> {
     let exe = std::env::current_exe().context("resolve exe")?;
     exe.parent().map(Path::to_path_buf).context("exe parent")
+}
+
+fn extract(bytes: &[u8], dest: &Path) -> Result<()> {
+    if dest.exists() {
+        return Ok(());
+    }
+    if let Some(p) = dest.parent() {
+        std::fs::create_dir_all(p)?;
+    }
+    std::fs::write(dest, bytes).with_context(|| format!("extract {}", dest.display()))
 }
 
 fn download(url: &str, dest: &Path) -> Result<()> {
@@ -47,15 +57,15 @@ pub fn ensure() -> Result<&'static Runtime> {
         let dir = exe_dir()?.join("llm-runtime");
         std::fs::create_dir_all(&dir).context("create runtime dir")?;
 
-        for file in [CLI_FILE, DLL_FILE] {
-            download(&format!("{GH_BASE}/{file}"), &dir.join(file))?;
-        }
+        extract(CLI_BYTES, &dir.join("llama-mtmd-cli.exe"))?;
+        extract(DLL_BYTES, &dir.join("mtmd.dll"))?;
+
         for file in [MODEL_FILE, MMPROJ_FILE] {
-            download(&format!("{HF_BASE}/{file}"), &dir.join(file))?;
+            download(&format!("{GH_BASE}/{file}"), &dir.join(file))?;
         }
 
         Ok(Runtime {
-            cli: dir.join(CLI_FILE),
+            cli: dir.join("llama-mtmd-cli.exe"),
             model: dir.join(MODEL_FILE),
             mmproj: dir.join(MMPROJ_FILE),
         })
