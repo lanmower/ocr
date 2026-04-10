@@ -1,150 +1,153 @@
 use anyhow::{Context, Result};
+use base64::Engine as _;
+use image::DynamicImage;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::io::Write;
 
-#[derive(Serialize)]
-struct OllamaRequest {
-    model: String,
-    prompt: String,
-    stream: bool,
+const DEFAULT_MODEL: &str = "gemma4:e4b";
+const OLLAMA_URL: &str = "http://localhost:11434/api/generate";
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransactionField {
+    pub value: Option<String>,
+    #[serde(default)]
+    pub confidence: f32,
+    #[serde(default)]
+    pub source: String,
 }
 
-#[derive(Deserialize)]
-struct OllamaResponse {
-    response: Option<String>,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransactionRecord {
+    pub date: TransactionField,
+    pub description: TransactionField,
+    pub amount: TransactionField,
+    pub balance: TransactionField,
 }
 
-fn ollama_url() -> String {
-    std::env::var("OLLAMA_HOST")
-        .unwrap_or_else(|_| "http://localhost:11434".to_string())
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ExtractionResult {
+    #[serde(default)]
+    pub transactions: Vec<TransactionRecord>,
 }
 
-fn build_prompt(ocr_text: &str) -> String {
-    format!(
-        "You are a bank statement data extraction system.\n\
-         Extract transaction rows from this OCR text into CSV.\n\n\
-         Schema: date,description,amount,balance\n\n\
-         Rules:\n\
-         - Output ONLY valid CSV starting with the header row\n\
-         - No markdown fences, no explanation, no commentary\n\
-         - Use exact values from the text\n\
-         - Negative amounts for debits/withdrawals, positive for credits/deposits\n\
-         - If a field is unclear or missing, leave it empty\n\
-         - Skip headers, footers, page numbers, bank logos, account summaries\n\
-         - Each transaction is one row\n\
-         - Dates should be in the format they appear in the text\n\n\
-         OCR Text:\n{}",
-        ocr_text
-    )
+pub fn default_model_name() -> &'static str {
+    DEFAULT_MODEL
 }
 
-fn chunk_text(text: &str, max_chars: usize) -> Vec<String> {
-    if text.len() <= max_chars {
-        return vec![text.to_string()];
-    }
+fn image_to_base64(img: &DynamicImage) -> Result<String> {
+    let mut buf: Vec<u8> = Vec::new();
+    img.write_to(&mut std::io::Cursor::new(&mut buf), image::ImageFormat::Png)
+        .context("encode image to PNG")?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(&buf))
+}
 
-    let overlap = max_chars / 5;
-    let step = max_chars - overlap;
-    let lines: Vec<&str> = text.lines().collect();
-    let mut chunks = Vec::new();
-    let mut start = 0;
+fn prompt_text() -> &'static str {
+    "You are a bank statement extraction system. Extract every transaction from this bank statement image. Return only valid JSON matching this schema exactly: {\"transactions\": [{\"date\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"description\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"amount\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"balance\": {\"value\": string|null, \"confidence\": number, \"source\": string}}]}. Rules: extract only transaction rows, not headers or page furniture. Keep values exactly as shown. Use null for missing. Confidence is 0.0 to 1.0. Source is the exact text from the image."
+}
 
-    while start < lines.len() {
-        let mut chunk_len = 0;
-        let mut end = start;
-        while end < lines.len() {
-            let line_len = lines[end].len() + 1;
-            if chunk_len + line_len > max_chars && end > start {
-                break;
+fn call_ollama(images_b64: &[String], model: &str) -> Result<String> {
+    let payload = json!({
+        "model": model,
+        "prompt": prompt_text(),
+        "images": images_b64,
+        "stream": false
+    });
+
+    let resp = ureq::post(OLLAMA_URL)
+        .send_json(&payload)
+        .context("call Ollama vision API")?;
+
+    let body: serde_json::Value = resp.into_body().read_json()
+        .context("parse Ollama response")?;
+
+    body["response"]
+        .as_str()
+        .map(|s| s.to_string())
+        .context("missing 'response' field in Ollama output")
+}
+
+fn extract_json(raw: &str) -> String {
+    let s = raw.trim()
+        .trim_start_matches("```json")
+        .trim_start_matches("```")
+        .trim_end_matches("```")
+        .trim();
+    let bytes = s.as_bytes();
+    let mut start = None;
+    let mut depth = 0usize;
+    let mut in_string = false;
+    let mut escaped = false;
+    for (i, b) in bytes.iter().enumerate() {
+        match *b {
+            b'\\' if in_string => escaped = !escaped,
+            b'"' if !escaped => in_string = !in_string,
+            b'{' if !in_string => {
+                if start.is_none() {
+                    start = Some(i);
+                }
+                depth += 1;
             }
-            chunk_len += line_len;
-            end += 1;
-        }
-        chunks.push(lines[start..end].join("\n"));
-        let lines_in_step = {
-            let mut count = 0;
-            let mut len = 0;
-            for i in start..end {
-                len += lines[i].len() + 1;
-                count += 1;
-                if len >= step {
-                    break;
+            b'}' if !in_string => {
+                if depth > 0 {
+                    depth -= 1;
+                    if depth == 0 {
+                        if let Some(st) = start {
+                            return s[st..=i].to_string();
+                        }
+                    }
                 }
             }
-            count
-        };
-        start += lines_in_step;
-    }
-
-    chunks
-}
-
-fn call_ollama(prompt: &str, model: &str) -> Result<String> {
-    let url = format!("{}/api/generate", ollama_url());
-
-    let body = OllamaRequest {
-        model: model.to_string(),
-        prompt: prompt.to_string(),
-        stream: false,
-    };
-
-    let resp: OllamaResponse = ureq::post(&url)
-        .header("Content-Type", "application/json")
-        .send_json(&body)
-        .context("ollama request failed - is ollama running?")?
-        .body_mut()
-        .read_json()
-        .context("parse ollama response")?;
-
-    Ok(resp.response.unwrap_or_default())
-}
-
-fn clean_csv(raw: &str) -> String {
-    let backticks = "```";
-    let csv_fence = "```csv";
-    raw.trim()
-        .strip_prefix(csv_fence).unwrap_or(raw.trim())
-        .strip_prefix(backticks).unwrap_or(raw.trim())
-        .strip_suffix(backticks).unwrap_or(raw.trim())
-        .trim()
-        .to_string()
-}
-
-pub fn process_ocr_text(ocr_text: &str, model: &str) -> Result<String> {
-    let chunks = chunk_text(ocr_text, 4000);
-
-    if chunks.len() == 1 {
-        let prompt = build_prompt(ocr_text);
-        let raw = call_ollama(&prompt, model)?;
-        return Ok(clean_csv(&raw));
-    }
-
-    eprintln!("[llm] processing {} chunks...", chunks.len());
-    let mut all_rows: Vec<String> = Vec::new();
-    let mut header = String::new();
-
-    for (i, chunk) in chunks.iter().enumerate() {
-        let prompt = build_prompt(chunk);
-        let raw = call_ollama(&prompt, model)?;
-        let csv = clean_csv(&raw);
-
-        for (j, line) in csv.lines().enumerate() {
-            if j == 0 && line.contains("date") {
-                if header.is_empty() {
-                    header = line.to_string();
-                }
-                continue;
-            }
-            if !line.trim().is_empty() {
-                all_rows.push(line.to_string());
-            }
+            _ => escaped = false,
         }
-        eprintln!("[llm] chunk {}/{} done ({} rows)", i + 1, chunks.len(), all_rows.len());
     }
+    s.to_string()
+}
 
-    let mut result = header;
-    for row in &all_rows {
-        result.push('\n');
-        result.push_str(row);
+fn csv_escape(v: &str) -> String {
+    if v.contains([',', '"', '\n']) {
+        format!("\"{}\"", v.replace('"', "\"\""))
+    } else {
+        v.to_string()
     }
-    Ok(result)
+}
+
+fn to_csv(records: &[TransactionRecord]) -> String {
+    let mut out = String::from("date,description,amount,balance\n");
+    for r in records {
+        out.push_str(&format!(
+            "{},{},{},{}\n",
+            csv_escape(r.date.value.as_deref().unwrap_or("")),
+            csv_escape(r.description.value.as_deref().unwrap_or("")),
+            csv_escape(r.amount.value.as_deref().unwrap_or("")),
+            csv_escape(r.balance.value.as_deref().unwrap_or(""))
+        ));
+    }
+    out
+}
+
+pub fn process_images_to_csv(images: &[DynamicImage], model: &str) -> Result<String> {
+    let result = process_images_to_json(images, model)?;
+    Ok(to_csv(&result.transactions))
+}
+
+pub fn process_images_to_json(images: &[DynamicImage], model: &str) -> Result<ExtractionResult> {
+    let encoded: Vec<String> = images
+        .iter()
+        .enumerate()
+        .map(|(i, img)| image_to_base64(img).with_context(|| format!("encode image {}", i)))
+        .collect::<Result<_>>()?;
+
+    eprintln!("[llm] sending {} image(s) to {} via Ollama", encoded.len(), model);
+    let raw = call_ollama(&encoded, model)?;
+    let json = extract_json(&raw);
+    serde_json::from_str::<ExtractionResult>(&json)
+        .with_context(|| format!("parse LLM extraction JSON: {}", &raw[..raw.len().min(200)]))
+}
+
+pub fn write_text(images: &[DynamicImage], w: &mut impl Write) -> Result<()> {
+    for (i, _) in images.iter().enumerate() {
+        writeln!(w, "[page {}]", i + 1)?;
+    }
+    Ok(())
 }

@@ -1,17 +1,14 @@
 use crate::llm;
-use crate::ocr::Engine;
-use crate::parse;
 use crate::pdf;
 use anyhow::{Context, Result};
-use rayon::prelude::*;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use walkdir::WalkDir;
 
 #[derive(Clone)]
 pub enum OutputFormat {
     Csv,
     Text,
+    Json,
 }
 
 pub struct Job {
@@ -19,7 +16,6 @@ pub struct Job {
     pub output_dir: PathBuf,
     pub dpi: u32,
     pub format: OutputFormat,
-    pub engine: Arc<Engine>,
     pub model: String,
 }
 
@@ -51,6 +47,7 @@ fn process_one(job: &Job) -> Result<PathBuf> {
     let ext = match job.format {
         OutputFormat::Csv => "csv",
         OutputFormat::Text => "txt",
+        OutputFormat::Json => "json",
     };
     let out_path = job.output_dir.join(format!("{}.{}", stem, ext));
 
@@ -62,21 +59,18 @@ fn process_one(job: &Job) -> Result<PathBuf> {
         vec![img]
     };
 
-    let mut all_lines: Vec<String> = Vec::new();
-    for img in &images {
-        let lines = job.engine.recognize(img)?;
-        all_lines.extend(lines);
-    }
-
     let mut file = std::fs::File::create(&out_path)?;
     match job.format {
         OutputFormat::Csv => {
-            let raw = all_lines.join("\n");
-            let csv_text = llm::process_ocr_text(&raw, &job.model)?;
-            std::io::Write::write_all(&mut file, csv_text.as_bytes())?;
+            let csv = llm::process_images_to_csv(&images, &job.model)?;
+            std::io::Write::write_all(&mut file, csv.as_bytes())?;
         }
         OutputFormat::Text => {
-            parse::write_text(&all_lines, &mut file)?;
+            llm::write_text(&images, &mut file)?;
+        }
+        OutputFormat::Json => {
+            let result = llm::process_images_to_json(&images, &job.model)?;
+            serde_json::to_writer_pretty(&mut file, &result)?;
         }
     }
 
@@ -88,22 +82,19 @@ pub fn run_batch(
     output_dir: &Path,
     dpi: u32,
     format: OutputFormat,
-    engine: Arc<Engine>,
     model: &str,
 ) -> Vec<Result<PathBuf>> {
-    let format = Arc::new(format);
     let model = model.to_string();
     std::fs::create_dir_all(output_dir).ok();
 
     inputs
-        .par_iter()
+        .iter()
         .map(|input| {
             let job = Job {
                 input: input.clone(),
                 output_dir: output_dir.to_path_buf(),
                 dpi,
-                format: (*format).clone(),
-                engine: Arc::clone(&engine),
+                format: format.clone(),
                 model: model.clone(),
             };
             let result = process_one(&job);

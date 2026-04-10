@@ -1,26 +1,18 @@
-# OCR Pipeline
+# Bank Statement Vision Pipeline
 
-Rust batch OCR pipeline for bank statement processing with Gemini AI post-processing.
+Rust batch pipeline for bank statement processing using Ollama vision LLM (Gemma 4) — reads images/PDFs directly, outputs structured CSV/JSON with no intermediate OCR step.
 
 ## Architecture
 
 - `src/main.rs` — CLI (clap) entry point
-- `src/models.rs` — ONNX model auto-download from S3
-- `src/pdf.rs` — PDF to image rendering via pdfium-render
-- `src/ocr.rs` — OCR engine wrapper around ocrs (rten-based)
-- `src/llm.rs` — Ollama LLM integration with chunking for CSV extraction
-- `src/drive.rs` — Google Drive/Sheets upload via gcloud auth
-- `src/parse.rs` — Text output utilities
-- `src/pipeline.rs` — Batch processing with rayon parallelism
+- `src/pdf.rs` — PDF to image rendering via pdfium-render (auto-downloads pdfium.dll)
+- `src/llm.rs` — Ollama vision API integration: encodes images as base64, calls Gemma 4, parses JSON
+- `src/pipeline.rs` — Batch processing
 
-## Auth (Gemini)
+## Runtime Dependencies
 
-Tries in order:
-1. `GEMINI_API_KEY` env var
-2. `gcloud auth application-default print-access-token`
-
-For gcloud: `gcloud auth application-default login` (one-time setup).
-For API key: get free key at https://aistudio.google.com/apikey
+- Ollama running locally (`ollama serve`) with a vision-capable model pulled
+- pdfium.dll auto-downloaded on first run next to the executable
 
 ## Build
 
@@ -28,15 +20,8 @@ Requires Rust 1.89+ (use rustup stable, not chocolatey rust).
 
 ```
 set PATH=C:\Users\user\.cargo\bin;%PATH%
-set RUSTUP_TOOLCHAIN=stable
 cargo build --release
 ```
-
-## Runtime Dependencies
-
-- pdfium library (pdfium.dll) must be in executable directory or system PATH
-- ONNX models auto-downloaded on first run to `./models/` next to executable
-- Ollama running locally (`ollama serve`) with a model pulled
 
 ## Usage
 
@@ -44,10 +29,10 @@ cargo build --release
 ocr --input ./statements --output ./results --format csv
 ocr --input ./statements --output ./results --format text
 ocr --input ./statements --format csv --model gemma4:e4b
-ocr --input ./statements --format csv --sheets
 ```
 
 ## Output Formats
 
-- `text` (default): Raw OCR text lines
-- `csv`: OCR text processed by Gemini into date,description,amount,balance CSV
+- `text` (default): Page listing only
+- `csv`: date,description,amount,balance CSV extracted by vision LLM
+- `json`: Structured ExtractionResult with confidence scores
