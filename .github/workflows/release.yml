@@ -11,20 +11,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo build --release
-      - name: Download runtime binaries
-        run: curl -L -o llama-vulkan.zip https://github.com/ggml-org/llama.cpp/releases/download/b8740/llama-b8740-bin-win-vulkan-x64.zip
-      - name: Extract runtime binaries
+      - name: Download model
         shell: pwsh
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          Expand-Archive -Path llama-vulkan.zip -DestinationPath llama-vulkan-extracted -Force
           New-Item -ItemType Directory -Force -Path assets
-          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter llama-mtmd-cli.exe).FullName assets/
-          Copy-Item (Get-ChildItem -Path llama-vulkan-extracted -Recurse -Filter mtmd.dll).FullName assets/
+          curl -L -H "Authorization: Bearer $env:HF_TOKEN" -o assets/google_gemma-4-E2B-it-Q4_K_M.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/google_gemma-4-E2B-it-Q4_K_M.gguf
+      - name: Download mmproj
+        shell: pwsh
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          curl -L -H "Authorization: Bearer $env:HF_TOKEN" -o assets/mmproj-google_gemma-4-E2B-it-f16.gguf https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main/mmproj-google_gemma-4-E2B-it-f16.gguf
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Latest
           files: |
             target/release/ocr.exe
-            assets/llama-mtmd-cli.exe
-            assets/mtmd.dll
+            assets/google_gemma-4-E2B-it-Q4_K_M.gguf
+            assets/mmproj-google_gemma-4-E2B-it-f16.gguf
