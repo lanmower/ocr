@@ -1,3 +1,9 @@
+## 0.8.0
+
+- Upload 5 separate release assets instead of single bundle (bypasses GitHub 2GB per-file limit)
+- runtime.rs downloads all 4 runtime files directly from GitHub release assets
+- Remove zip crate dependency (no longer needed)
+
 ## 0.7.0
 
 - Bundle all runtime files (ocr.exe + llama-mtmd-cli.exe + mtmd.dll + model GGUF + mmproj GGUF) into single ocr-bundle.zip release asset
