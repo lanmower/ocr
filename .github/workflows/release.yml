@@ -36,7 +36,8 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item target/release/ocr.exe bundle/
-          Compress-Archive -Path bundle/* -DestinationPath ocr-bundle.zip -Force
+          Add-Type -Assembly System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory((Resolve-Path bundle).Path, (Join-Path (Get-Location) 'ocr-bundle.zip'))
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
