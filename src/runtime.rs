@@ -4,7 +4,8 @@ use std::fs::File;
 use std::io;
 use std::path::{Path, PathBuf};
 
-const BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
+const GH_BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
+const HF_BASE: &str = "https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF/resolve/main";
 const CLI_FILE: &str = "llama-mtmd-cli.exe";
 const DLL_FILE: &str = "mtmd.dll";
 const MODEL_FILE: &str = "google_gemma-4-E2B-it-Q4_K_M.gguf";
@@ -46,8 +47,11 @@ pub fn ensure() -> Result<&'static Runtime> {
         let dir = exe_dir()?.join("llm-runtime");
         std::fs::create_dir_all(&dir).context("create runtime dir")?;
 
-        for file in [CLI_FILE, DLL_FILE, MODEL_FILE, MMPROJ_FILE] {
-            download(&format!("{BASE}/{file}"), &dir.join(file))?;
+        for file in [CLI_FILE, DLL_FILE] {
+            download(&format!("{GH_BASE}/{file}"), &dir.join(file))?;
+        }
+        for file in [MODEL_FILE, MMPROJ_FILE] {
+            download(&format!("{HF_BASE}/{file}"), &dir.join(file))?;
         }
 
         Ok(Runtime {
