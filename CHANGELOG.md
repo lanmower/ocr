@@ -1,3 +1,7 @@
+## 0.6.0
+
+- Add GitHub Actions CI workflow: builds ocr.exe on windows-latest, uploads as rolling `latest` release on every push to master
+
 # Changelog
 
 ## 0.5.0
