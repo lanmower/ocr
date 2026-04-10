@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::path::PathBuf;
 
-pub const DEFAULT_MODEL: &str = "gemma4-e2b-q4km";
+pub const DEFAULT_MODEL: &str = "gemini-2.0-flash";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionField {
@@ -79,8 +79,8 @@ fn to_csv(records: &[TransactionRecord]) -> String {
     out
 }
 
-pub fn process_images_to_csv(images: &[DynamicImage], _model: &str) -> Result<String> {
-    Ok(to_csv(&process_images_to_json(images, _model)?.transactions))
+pub fn process_images_to_csv(images: &[DynamicImage], model: &str) -> Result<String> {
+    Ok(to_csv(&process_images_to_json(images, model)?.transactions))
 }
 
 pub fn process_images_to_json(images: &[DynamicImage], _model: &str) -> Result<ExtractionResult> {
@@ -95,24 +95,22 @@ pub fn process_images_to_json(images: &[DynamicImage], _model: &str) -> Result<E
         paths.push(p);
     }
 
-    let mut cmd = std::process::Command::new(&rt.cli);
-    cmd.arg("-m").arg(&rt.model)
-        .arg("--mmproj").arg(&rt.mmproj)
-        .arg("-n").arg("2048")
-        .arg("-p").arg(prompt());
-    for p in &paths {
-        cmd.arg("--image").arg(p);
-    }
+    let images_arg = paths.iter().map(|p| p.to_string_lossy().into_owned()).collect::<Vec<_>>().join(",");
 
-    eprintln!("[llm] running llama-mtmd-cli with {} image(s)", paths.len());
-    let out = cmd.output().context("run llama-mtmd-cli")?;
+    eprintln!("[llm] running infer.py with {} image(s)", paths.len());
+    let out = std::process::Command::new(&rt.py)
+        .arg(&rt.script)
+        .arg("--images").arg(&images_arg)
+        .arg("--prompt").arg(prompt())
+        .output()
+        .context("run infer.py")?;
 
     for p in &paths {
         let _ = std::fs::remove_file(p);
     }
 
     if !out.status.success() {
-        anyhow::bail!("llama-mtmd-cli failed: {}", String::from_utf8_lossy(&out.stderr).trim());
+        anyhow::bail!("infer.py failed: {}", String::from_utf8_lossy(&out.stderr).trim());
     }
 
     let raw = String::from_utf8_lossy(&out.stdout).to_string();

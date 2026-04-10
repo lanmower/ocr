@@ -1,3 +1,14 @@
+## 1.0.0
+
+- Replace llama-mtmd-cli subprocess with Google Gemini API (gemini-2.0-flash) via Python
+- Add src/infer.py: Python script using google-genai SDK, embedded in binary via include_str!
+- Rewrite runtime.rs: extracts infer.py to llm-runtime/, verifies python + google-genai on startup
+- Rewrite llm.rs: spawns `python infer.py --images ... --prompt ...` instead of llama-mtmd-cli
+- Rewrite build.rs: emits INFER_PY env var pointing to src/infer.py, no more DLL download logic
+- Simplify release.yml: uploads ocr.exe only, no model shard downloads
+- Downgrade image crate to 0.24 (0.25 uses unstable Rust features); pdfium-render uses image_024 feature
+- Remove build-dependencies (zip crate no longer needed)
+
 ## 0.9.0
 
 - Embed all llama.cpp DLLs (ggml-vulkan, ggml-base, ggml, llama, mtmd, libomp, ggml-cpu-x64) into ocr.exe via include_bytes!
