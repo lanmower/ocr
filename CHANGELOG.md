@@ -1,3 +1,12 @@
+## 1.1.0
+
+- Replace Python/Gemini API subprocess with Ollama HTTP API (POST /api/generate)
+- Default model: gemma4:e2b (local, via Ollama)
+- Delete src/runtime.rs, src/infer.py, build.rs (no longer needed)
+- Remove mod runtime from main.rs
+- Enable ureq json feature in Cargo.toml (not default in ureq 3)
+- Base64 encoding of images done inline in Rust, no external dependency
+
 ## 1.0.0
 
 - Replace llama-mtmd-cli subprocess with Google Gemini API (gemini-2.0-flash) via Python

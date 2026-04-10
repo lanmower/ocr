@@ -1,20 +1,17 @@
 # Bank Statement Vision Pipeline
 
-Rust batch pipeline for bank statement processing using Google Gemini API (gemini-2.0-flash) via Python subprocess — reads images/PDFs directly, outputs structured CSV/JSON. No OCR step, no daemon, no listening port.
+Rust batch pipeline for bank statement processing using Ollama (gemma4:e2b) — reads images/PDFs directly, outputs structured CSV/JSON. No OCR step, no daemon, no listening port.
 
 ## Architecture
 
 - `src/main.rs` — CLI (clap) entry point
 - `src/pdf.rs` — PDF to image rendering via pdfium-render (auto-downloads pdfium.dll)
-- `src/runtime.rs` — Embeds `src/infer.py` via `include_str!`, extracts to `llm-runtime/` on first run, verifies python + google-genai
-- `src/llm.rs` — Vision inference: writes page PNGs to temp, spawns `python infer.py --images ... --prompt ...`, parses JSON
+- `src/llm.rs` — Vision inference: encodes page PNGs as base64, POSTs to Ollama `/api/generate`, parses JSON
 - `src/pipeline.rs` — Batch processing
-- `src/infer.py` — Python script embedded in binary; calls gemini-2.0-flash with image bytes + prompt, prints JSON
 
 ## Runtime Dependencies
 
-- Python 3 on PATH with `google-genai` package installed (`pip install google-genai`)
-- `GEMINI_API_KEY` environment variable set to a valid Gemini API key
+- Ollama running at `http://localhost:11434` with `gemma4:e2b` model pulled
 - pdfium.dll auto-downloaded next to the executable
 
 ## Build
@@ -26,12 +23,13 @@ set PATH=C:\Users\user\.cargo\bin;%PATH%
 cargo build --release
 ```
 
-`build.rs` embeds `src/infer.py` path via `cargo:rustc-env=INFER_PY`. `runtime.rs` uses `include_str!(env!("INFER_PY"))` to embed the Python script at compile time.
+No build script — `build.rs` removed. `ureq` requires `features = ["json"]` in Cargo.toml (not enabled by default in ureq 3).
 
 ## Usage
 
 ```
-set GEMINI_API_KEY=<your key>
+ollama pull gemma4:e2b
+ollama serve
 ocr --input ./statements --output ./results --format csv
 ocr --input ./statements --output ./results --format text
 ```

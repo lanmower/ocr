@@ -1,11 +1,9 @@
-use crate::runtime;
 use anyhow::{Context, Result};
 use image::DynamicImage;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
-use std::path::PathBuf;
 
-pub const DEFAULT_MODEL: &str = "gemini-2.0-flash";
+pub const DEFAULT_MODEL: &str = "gemma4:e2b";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionField {
@@ -34,10 +32,28 @@ pub fn default_model_name() -> &'static str {
     DEFAULT_MODEL
 }
 
-fn write_image(img: &DynamicImage, path: &PathBuf) -> Result<()> {
-    let f = std::fs::File::create(path).context("create temp image")?;
-    let mut w = std::io::BufWriter::new(f);
-    img.write_to(&mut w, image::ImageFormat::Png).context("encode image png")
+fn encode_image(img: &DynamicImage) -> Result<String> {
+    let mut buf = std::io::Cursor::new(Vec::new());
+    img.write_to(&mut buf, image::ImageFormat::Png).context("encode png")?;
+    Ok(base64(buf.get_ref()))
+}
+
+fn base64(data: &[u8]) -> String {
+    const CHARS: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut out = String::with_capacity((data.len() + 2) / 3 * 4);
+    for chunk in data.chunks(3) {
+        let b = match chunk.len() {
+            3 => [chunk[0], chunk[1], chunk[2]],
+            2 => [chunk[0], chunk[1], 0],
+            _ => [chunk[0], 0, 0],
+        };
+        let n = ((b[0] as u32) << 16) | ((b[1] as u32) << 8) | (b[2] as u32);
+        out.push(CHARS[((n >> 18) & 63) as usize] as char);
+        out.push(CHARS[((n >> 12) & 63) as usize] as char);
+        out.push(if chunk.len() >= 2 { CHARS[((n >> 6) & 63) as usize] as char } else { '=' });
+        out.push(if chunk.len() == 3 { CHARS[(n & 63) as usize] as char } else { '=' });
+    }
+    out
 }
 
 fn prompt() -> &'static str {
@@ -83,40 +99,26 @@ pub fn process_images_to_csv(images: &[DynamicImage], model: &str) -> Result<Str
     Ok(to_csv(&process_images_to_json(images, model)?.transactions))
 }
 
-pub fn process_images_to_json(images: &[DynamicImage], _model: &str) -> Result<ExtractionResult> {
-    let rt = runtime::ensure()?;
-    let tmp_dir = std::env::temp_dir().join("ocr-imgs");
-    std::fs::create_dir_all(&tmp_dir).context("create tmp img dir")?;
-
-    let mut paths: Vec<PathBuf> = Vec::new();
-    for (i, img) in images.iter().enumerate() {
-        let p = tmp_dir.join(format!("page-{}.png", i));
-        write_image(img, &p)?;
-        paths.push(p);
-    }
-
-    let images_arg = paths.iter().map(|p| p.to_string_lossy().into_owned()).collect::<Vec<_>>().join(",");
-
-    eprintln!("[llm] running infer.py with {} image(s)", paths.len());
-    let out = std::process::Command::new(&rt.py)
-        .arg(&rt.script)
-        .arg("--images").arg(&images_arg)
-        .arg("--prompt").arg(prompt())
-        .output()
-        .context("run infer.py")?;
-
-    for p in &paths {
-        let _ = std::fs::remove_file(p);
-    }
-
-    if !out.status.success() {
-        anyhow::bail!("infer.py failed: {}", String::from_utf8_lossy(&out.stderr).trim());
-    }
-
-    let raw = String::from_utf8_lossy(&out.stdout).to_string();
-    let json = extract_json(&raw);
+pub fn process_images_to_json(images: &[DynamicImage], model: &str) -> Result<ExtractionResult> {
+    let imgs: Vec<String> = images.iter().map(encode_image).collect::<Result<_>>()?;
+    let body = serde_json::json!({
+        "model": model,
+        "prompt": prompt(),
+        "images": imgs,
+        "stream": false
+    });
+    eprintln!("[llm] calling ollama with {} image(s) model={}", imgs.len(), model);
+    let mut resp = ureq::post("http://localhost:11434/api/generate")
+        .send_json(&body)
+        .context("ollama request")?;
+    let raw = resp.body_mut().read_to_string().context("read ollama response")?;
+    let obj: serde_json::Value = serde_json::from_str(&raw)
+        .with_context(|| format!("parse ollama response: {}", &raw[..raw.len().min(200)]))?;
+    let text = obj["response"].as_str()
+        .with_context(|| format!("missing response field: {}", &raw[..raw.len().min(200)]))?;
+    let json = extract_json(text);
     serde_json::from_str::<ExtractionResult>(&json)
-        .with_context(|| format!("parse llm json: {}", &raw[..raw.len().min(300)]))
+        .with_context(|| format!("parse llm json: {}", &json[..json.len().min(300)]))
 }
 
 pub fn write_text(images: &[DynamicImage], w: &mut impl Write) -> Result<()> {
