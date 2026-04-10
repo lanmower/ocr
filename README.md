@@ -4,8 +4,11 @@ Batch bank statement processor — vision LLM reads PDF/image pages directly, ou
 
 ## Requirements
 
-- Python 3 with `google-genai` installed: `pip install google-genai`
-- `GEMINI_API_KEY` environment variable
+- [Ollama](https://ollama.com) running locally with `gemma4:e2b` pulled
+
+```
+ollama pull gemma4:e2b
+```
 
 ## Download
 
@@ -14,13 +17,10 @@ Get `ocr.exe` from the [latest release](https://github.com/lanmower/ocr/releases
 ## Usage
 
 ```
-set GEMINI_API_KEY=<your key>
 ocr --input ./statements --output ./results --format csv
 ocr --input ./statements --output ./results --format text
 ocr --input ./statements --output ./results --format json
 ```
-
-On first run, extracts `infer.py` to `llm-runtime/` next to the executable.
 
 ## Build
 
