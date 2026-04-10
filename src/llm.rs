@@ -99,7 +99,6 @@ pub fn process_images_to_json(images: &[DynamicImage], _model: &str) -> Result<E
     cmd.arg("-m").arg(&rt.model)
         .arg("--mmproj").arg(&rt.mmproj)
         .arg("-n").arg("2048")
-        .arg("--no-display-prompt")
         .arg("-p").arg(prompt());
     for p in &paths {
         cmd.arg("--image").arg(p);

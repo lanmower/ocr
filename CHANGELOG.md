@@ -1,3 +1,11 @@
+## 0.9.0
+
+- Embed all llama.cpp DLLs (ggml-vulkan, ggml-base, ggml, llama, mtmd, libomp, ggml-cpu-x64) into ocr.exe via include_bytes!
+- Upgrade llama.cpp from b8740 to b8741 (Vulkan build)
+- Split model GGUF into 3 shards (was 2) to stay under 1900MB per shard
+- runtime.rs downloads 3 model shards from GitHub release
+- Remove --no-display-prompt flag from llama-mtmd-cli invocation
+
 ## 0.8.0
 
 - Upload 5 separate release assets instead of single bundle (bypasses GitHub 2GB per-file limit)
