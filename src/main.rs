@@ -1,7 +1,4 @@
 mod llm;
-mod models;
-mod ocr;
-mod parse;
 mod pdf;
 mod pipeline;
 
@@ -10,7 +7,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(name = "ocr", about = "Batch OCR pipeline for bank statements")]
+#[command(name = "ocr", about = "Batch bank statement processing via vision LLM")]
 struct Cli {
     #[arg(short, long)]
     input: PathBuf,
@@ -24,28 +21,21 @@ struct Cli {
     #[arg(long, default_value = "text", value_parser = parse_format)]
     format: pipeline::OutputFormat,
 
-    #[arg(long)]
-    model_dir: Option<PathBuf>,
-
-    #[arg(long, default_value = "gemma4:e4b")]
+    #[arg(long, default_value = llm::default_model_name())]
     model: String,
-
 }
 
 fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
     match s.to_lowercase().as_str() {
         "csv" => Ok(pipeline::OutputFormat::Csv),
+        "json" => Ok(pipeline::OutputFormat::Json),
         "text" | "txt" => Ok(pipeline::OutputFormat::Text),
-        _ => Err(format!("unknown format: {}, use csv or text", s)),
+        _ => Err(format!("unknown format: {}, use csv, json or text", s)),
     }
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-
-    eprintln!("Loading OCR models...");
-    let (detect, rec) = models::ensure_models(cli.model_dir.as_deref())?;
-    let engine = ocr::create_engine(&detect, &rec)?;
 
     let inputs = pipeline::collect_inputs(&cli.input);
     if inputs.is_empty() {
@@ -58,7 +48,6 @@ fn main() -> Result<()> {
         &cli.output,
         cli.dpi,
         cli.format,
-        engine,
         &cli.model,
     );
 
