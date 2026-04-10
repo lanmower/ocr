@@ -43,3 +43,7 @@ ocr --input ./statements --output ./results --format text
 - `text` (default): Page listing only
 - `csv`: date,description,amount,balance CSV extracted by vision LLM
 - `json`: Structured ExtractionResult with confidence scores
+
+## CI / Releases
+
+GitHub Actions builds `ocr.exe` on `windows-latest` on every push to master and uploads it as a rolling `latest` release. Workflow: `.github/workflows/release.yml`.
