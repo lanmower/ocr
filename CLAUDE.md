@@ -6,21 +6,15 @@ Rust batch pipeline for bank statement processing using llama-mtmd-cli (llama.cp
 
 - `src/main.rs` — CLI (clap) entry point
 - `src/pdf.rs` — PDF to image rendering via pdfium-render (auto-downloads pdfium.dll)
-- `src/runtime.rs` — Auto-downloads llama.cpp + GGUF model + mmproj, GPU detection (Vulkan vs CPU)
+- `src/runtime.rs` — Extracts embedded DLLs + downloads GGUF shards from GitHub release on first run
 - `src/llm.rs` — Vision inference: writes page PNGs to temp, calls llama-mtmd-cli subprocess, parses JSON
 - `src/pipeline.rs` — Batch processing
 
 ## Runtime Dependencies
 
-- All auto-downloaded on first run into `llm-runtime/` next to the executable:
-  - `llama-mtmd-cli.exe` + `mtmd.dll` (from llama.cpp b8740 Vulkan or CPU zip)
-  - `google_gemma-4-E2B-it-Q4_K_M.gguf` (~1.5GB)
-  - `mmproj-google_gemma-4-E2B-it-f16.gguf` (~300MB)
+- `llama-mtmd-cli.exe` + 7 DLLs (`mtmd`, `ggml-vulkan`, `ggml-base`, `ggml`, `llama`, `libomp140.x86_64`, `ggml-cpu-x64`) embedded in `ocr.exe` via `include_bytes!` at build time (from llama.cpp b8741 Vulkan zip), extracted to `llm-runtime/` on first run
+- 3 model GGUF shards (~1.5GB total) + `mmproj-google_gemma-4-E2B-it-f16.gguf` (~300MB) downloaded from GitHub release on first run into `llm-runtime/`
 - pdfium.dll auto-downloaded next to the executable
-
-## GPU Detection
-
-At startup, checks for `nvidia-smi` or `vulkaninfo`. If found, downloads the Vulkan-accelerated llama.cpp build. Otherwise downloads the CPU build. RTX 3060+ recommended.
 
 ## Build
 
