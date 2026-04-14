@@ -60,8 +60,12 @@ fn prompt() -> &'static str {
     "Extract every transaction from this bank statement. Return only valid JSON: {\"transactions\": [{\"date\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"description\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"amount\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"balance\": {\"value\": string|null, \"confidence\": number, \"source\": string}}]}. Extract only transaction rows. Keep values exactly as shown. Null for missing. Confidence 0.0-1.0."
 }
 
+fn strip_think(s: &str) -> &str {
+    if let Some(end) = s.find("</think>") { &s[end + 8..] } else { s }
+}
+
 fn extract_json(raw: &str) -> String {
-    let s = raw.trim().trim_start_matches("```json").trim_start_matches("```").trim_end_matches("```").trim();
+    let s = strip_think(raw.trim()).trim().trim_start_matches("```json").trim_start_matches("```").trim_end_matches("```").trim();
     let bytes = s.as_bytes();
     let mut start = None;
     let mut depth = 0usize;
@@ -110,14 +114,17 @@ pub fn process_images_to_json(images: &[DynamicImage], model: &str) -> Result<Ex
         "messages": [{"role": "user", "content": content}],
         "stream": false
     });
-    eprintln!("[llm] calling llama-server with {} image(s)", images.len());
-    let mut resp = ureq::post("http://127.0.0.1:8080/v1/chat/completions")
+    let host = std::env::var("LLAMA_HOST").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
+    eprintln!("[llm] calling llama-server at {} with {} image(s)", host, images.len());
+    let mut resp = ureq::post(&format!("http://{}/v1/chat/completions", host))
         .send_json(&body)
         .context("llama-server request")?;
     let raw = resp.body_mut().read_to_string().context("read llama-server response")?;
     let obj: serde_json::Value = serde_json::from_str(&raw)
         .with_context(|| format!("parse llama-server response: {}", &raw[..raw.len().min(200)]))?;
-    let text = obj["choices"][0]["message"]["content"].as_str()
+    let msg = &obj["choices"][0]["message"];
+    let text = msg["content"].as_str()
+        .or_else(|| msg["reasoning_content"].as_str())
         .with_context(|| format!("missing content field: {}", &raw[..raw.len().min(200)]))?;
     let json = extract_json(text);
     serde_json::from_str::<ExtractionResult>(&json)

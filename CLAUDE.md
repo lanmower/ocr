@@ -1,18 +1,20 @@
 # Bank Statement Vision Pipeline
 
-Rust batch pipeline for bank statement processing using Ollama (gemma4:e2b) — reads images/PDFs directly, outputs structured CSV/JSON. No OCR step, no daemon, no listening port.
+Rust batch pipeline for bank statement processing using llama-server (gemma4 E2B) — reads images/PDFs directly, outputs structured CSV/JSON. No OCR step, no daemon, no external dependencies.
 
 ## Architecture
 
 - `src/main.rs` — CLI (clap) entry point
 - `src/pdf.rs` — PDF to image rendering via pdfium-render (auto-downloads pdfium.dll)
-- `src/llm.rs` — Vision inference: encodes page PNGs as base64, POSTs to Ollama `/api/generate`, parses JSON
+- `src/llm.rs` — Vision inference: encodes page PNGs as base64, POSTs to llama-server `/v1/chat/completions`, parses JSON
 - `src/pipeline.rs` — Batch processing
 
 ## Runtime Dependencies
 
-- Ollama running at `http://localhost:11434` with `gemma4:e2b` model pulled
-- pdfium.dll auto-downloaded next to the executable
+All bundled in `tmp-llama/`:
+- `tmp-llama/model.gguf` — Gemma 4 E2B 4.6B quantized model (~4GB)
+- `tmp-llama/mmproj-google_gemma-4-E2B-it-f16.gguf` — multimodal projector (~940MB)
+- `tmp-llama/unzipped/llama-server.exe` + DLLs — llama.cpp server
 
 ## Build
 
@@ -28,10 +30,15 @@ No build script — `build.rs` removed. `ureq` requires `features = ["json"]` in
 ## Usage
 
 ```
-ollama pull gemma4:e2b
-ollama serve
-ocr --input ./statements --output ./results --format csv
-ocr --input ./statements --output ./results --format text
+start.bat --input ./test-statements --output ./test-results --format csv
+```
+
+`start.bat` launches `llama-server` on `127.0.0.1:8080`, waits for `/health`, then runs the pipeline. Model loads from `tmp-llama/` — no internet required.
+
+To override the server address:
+```
+set LLAMA_HOST=127.0.0.1:8081
+target\release\ocr.exe --input ./statements --output ./results --format csv
 ```
 
 ## Output Formats
