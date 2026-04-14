@@ -2,27 +2,20 @@
 setlocal
 
 set SCRIPT_DIR=%~dp0
-set OLLAMA_MODELS=%SCRIPT_DIR%models
-set OLLAMA_HOST=127.0.0.1:11434
-set PATH=%SCRIPT_DIR%ollama;%PATH%
+set LLM_DIR=%SCRIPT_DIR%tmp-llama
+set MODEL=%LLM_DIR%\model.gguf
+set MMPROJ=%LLM_DIR%\mmproj-google_gemma-4-E2B-it-f16.gguf
+set SERVER=%LLM_DIR%\llama-server.exe
+set PATH=%LLM_DIR%\unzipped;%PATH%
 
-if not exist "%OLLAMA_MODELS%" mkdir "%OLLAMA_MODELS%"
+REM Start llama-server in background
+start /b "" "%SERVER%" -m "%MODEL%" --mmproj "%MMPROJ%" --host 127.0.0.1 --port 8080 -ngl 0
 
-REM Start ollama serve in background
-start /b "" "%SCRIPT_DIR%ollama\ollama.exe" serve
-
-REM Wait for it to be ready
+REM Wait for server ready
 :wait
-timeout /t 1 /nobreak >nul
-"%SCRIPT_DIR%ollama\ollama.exe" list >nul 2>&1
+timeout /t 2 /nobreak >nul
+curl -s http://127.0.0.1:8080/health | findstr "ok" >nul 2>&1
 if errorlevel 1 goto wait
-
-REM Pull model if not present
-"%SCRIPT_DIR%ollama\ollama.exe" list | findstr "gemma4:e2b" >nul 2>&1
-if errorlevel 1 (
-    echo Pulling gemma4:e2b...
-    "%SCRIPT_DIR%ollama\ollama.exe" pull gemma4:e2b
-)
 
 REM Run pipeline - pass all args through
 "%SCRIPT_DIR%target\release\ocr.exe" %*

@@ -3,7 +3,7 @@ use image::DynamicImage;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 
-pub const DEFAULT_MODEL: &str = "gemma4:e2b";
+pub const DEFAULT_MODEL: &str = "local";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionField {
@@ -100,22 +100,25 @@ pub fn process_images_to_csv(images: &[DynamicImage], model: &str) -> Result<Str
 }
 
 pub fn process_images_to_json(images: &[DynamicImage], model: &str) -> Result<ExtractionResult> {
-    let imgs: Vec<String> = images.iter().map(encode_image).collect::<Result<_>>()?;
+    let content: Vec<serde_json::Value> = std::iter::once(serde_json::json!({"type": "text", "text": prompt()}))
+        .chain(images.iter().map(|img| -> Result<serde_json::Value> {
+            Ok(serde_json::json!({"type": "image_url", "image_url": {"url": format!("data:image/png;base64,{}", encode_image(img)?)}}))
+        }).collect::<Result<Vec<_>>>()?.into_iter())
+        .collect();
     let body = serde_json::json!({
         "model": model,
-        "prompt": prompt(),
-        "images": imgs,
+        "messages": [{"role": "user", "content": content}],
         "stream": false
     });
-    eprintln!("[llm] calling ollama with {} image(s) model={}", imgs.len(), model);
-    let mut resp = ureq::post("http://localhost:11434/api/generate")
+    eprintln!("[llm] calling llama-server with {} image(s)", images.len());
+    let mut resp = ureq::post("http://127.0.0.1:8080/v1/chat/completions")
         .send_json(&body)
-        .context("ollama request")?;
-    let raw = resp.body_mut().read_to_string().context("read ollama response")?;
+        .context("llama-server request")?;
+    let raw = resp.body_mut().read_to_string().context("read llama-server response")?;
     let obj: serde_json::Value = serde_json::from_str(&raw)
-        .with_context(|| format!("parse ollama response: {}", &raw[..raw.len().min(200)]))?;
-    let text = obj["response"].as_str()
-        .with_context(|| format!("missing response field: {}", &raw[..raw.len().min(200)]))?;
+        .with_context(|| format!("parse llama-server response: {}", &raw[..raw.len().min(200)]))?;
+    let text = obj["choices"][0]["message"]["content"].as_str()
+        .with_context(|| format!("missing content field: {}", &raw[..raw.len().min(200)]))?;
     let json = extract_json(text);
     serde_json::from_str::<ExtractionResult>(&json)
         .with_context(|| format!("parse llm json: {}", &json[..json.len().min(300)]))
