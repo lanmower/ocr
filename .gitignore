@@ -1,0 +1,12 @@
+/target
+/models
+*.rten
+.codeinsight
+.gm-stop-verified
+models/
+output/
+output-local/
+output-mini/
+tmp/
+tmp-llama/
+ollama/
