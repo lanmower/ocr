@@ -1,0 +1,55 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Length 978 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+12 TL
+(PEOPLES BANK - Joint Savings Account) Tj T*
+(Account: 4521-XXXX-XXXX-7890) Tj T*
+(Period: 01/01/2024 - 31/01/2024) Tj T*
+() Tj T*
+(Date        Description                    Amount      Balance) Tj T*
+(----------  -----------------------------  ----------  ----------) Tj T*
+(01/15/2024  DIRECT DEPOSIT - EMPLOYER A     +2,100.00   $8,100.00) Tj T*
+(01/15/2024  DIRECT DEPOSIT - EMPLOYER B     +1,850.00   $9,950.00) Tj T*
+(01/16/2024  MORTGAGE PAYMENT                -1,456.89   $8,493.11) Tj T*
+(01/20/2024  CAR PAYMENT - AUTO LOAN           -389.00   $8,104.11) Tj T*
+(01/22/2024  GROCERY - COSTCO                  -287.45   $7,816.66) Tj T*
+(01/25/2024  INSURANCE - STATE FARM            -234.00   $7,582.66) Tj T*
+(01/28/2024  VACATION SAVINGS TRANSFER         +500.00   $8,082.66) Tj T*
+(01/31/2024  INTEREST EARNED                    +20.21   $8,102.87) Tj T*
+() Tj T*
+(Opening Balance: $1,250.00) Tj T*
+(Closing Balance: $8,102.87) Tj T*
+ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 3 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000001144 00000 n 
+0000001270 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1338
+startxref
+1338
+%%EOF

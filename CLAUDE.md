@@ -11,7 +11,7 @@ Rust batch pipeline for bank statement processing using llama-server (gemma4 E2B
 
 ## Runtime Dependencies
 
-All bundled in `tmp-llama/` (gitignored):
+All into `tmp-llama/` (gitignored), auto-fetched by `setup.bat` (called from `start.bat`/`ocr.bat` on first run):
 - `tmp-llama/model-q4km.gguf` — Gemma 4 E2B Q4_K_M from bartowski/google_gemma-4-E2B-it-GGUF (~3.46GB)
 - `tmp-llama/mmproj-google_gemma-4-E2B-it-f16.gguf` — multimodal projector (~940MB)
 - `tmp-llama/b8785-extracted/llama-server.exe` + DLLs — llama.cpp b8785 server (requires b8785+, earlier builds lack multimodal server support)

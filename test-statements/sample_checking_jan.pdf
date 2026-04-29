@@ -1,0 +1,57 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Length 1138 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+12 TL
+(FIRST NATIONAL BANK - Checking Account Statement) Tj T*
+(Account: 4521-XXXX-XXXX-7890) Tj T*
+(Period: 01/01/2024 - 31/01/2024) Tj T*
+() Tj T*
+(Date        Description                    Amount      Balance) Tj T*
+(----------  -----------------------------  ----------  ----------) Tj T*
+(01/03/2024  PAYROLL DEPOSIT - ACME CORP     +3,250.00   $4,500.00) Tj T*
+(01/05/2024  WALMART SUPERCENTER #4521          -87.43   $4,412.57) Tj T*
+(01/07/2024  AMAZON PRIME MEMBERSHIP            -14.99   $4,397.58) Tj T*
+(01/10/2024  UTILITY BILL - ELECTRIC           -145.22   $4,252.36) Tj T*
+(01/12/2024  ATM WITHDRAWAL                    -200.00   $4,052.36) Tj T*
+(01/15/2024  NETFLIX SUBSCRIPTION               -15.49   $4,036.87) Tj T*
+(01/18/2024  RENT PAYMENT - OAK APARTMENTS   -1,200.00   $2,836.87) Tj T*
+(01/22/2024  GROCERY STORE PURCHASE            -134.67   $2,702.20) Tj T*
+(01/25/2024  GAS STATION - SHELL                -58.90   $2,643.30) Tj T*
+(01/28/2024  RESTAURANT - OLIVE GARDEN          -67.45   $2,575.85) Tj T*
+() Tj T*
+(Opening Balance: $1,250.00) Tj T*
+(Closing Balance: $2,575.85) Tj T*
+ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 3 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000001305 00000 n 
+0000001431 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1499
+startxref
+1499
+%%EOF

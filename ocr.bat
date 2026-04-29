@@ -9,6 +9,17 @@ set SERVER=%LLM_DIR%\b8785-extracted\llama-server.exe
 set LLAMA_HOST=127.0.0.1:8080
 set PATH=%LLM_DIR%\b8785-extracted;%PATH%
 
+REM Auto-fetch runtime bundle on first run
+if not exist "%SERVER%" call "%SCRIPT_DIR%setup.bat" || exit /b 1
+if not exist "%MODEL%" call "%SCRIPT_DIR%setup.bat" || exit /b 1
+if not exist "%MMPROJ%" call "%SCRIPT_DIR%setup.bat" || exit /b 1
+
+REM Build ocr.exe if missing
+if not exist "%SCRIPT_DIR%target\release\ocr.exe" (
+    echo Building ocr.exe...
+    cargo build --release || exit /b 1
+)
+
 REM Kill any existing llama-server
 taskkill /f /im llama-server.exe >nul 2>&1
 

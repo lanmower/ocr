@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!--[if IE 7]> <html lang="en" class="ie7"> <![endif]-->
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en"><!-- InstanceBegin template="/Templates/wide.dwt" codeOutsideHTMLIsLocked="false" -->
+<!--<![endif]-->
+
+<head>
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Page Not Found : Stanford University</title>
+<!-- InstanceEndEditable -->
+
+<!-- Meta -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="author" content="Financial Aid Office at Stanford University" />
+<!-- InstanceBeginEditable name="MetaTags" -->
+<meta name="description" content="Financial Aid Office at Stanford University--one of the world's leading research and teaching institutions. It is located in Palo Alto, California." />
+<link rel="icon" type="image/png" href="https://www.stanford.edu/favicon.ico"/>
+<!-- InstanceEndEditable -->
+
+<!-- CSS -->
+<link rel="stylesheet" href="../assets/cardinal/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="../assets/cardinal/css/base.min.css?v=0.1" type="text/css" />
+<link rel="stylesheet" href="../assets/cardinal/css/custom.css?v=0.1" type="text/css"/>
+<link rel="stylesheet" href="../assets/cardinal/css/print.css" type="text/css" media="print" />
+<!--[if lt IE 9]>
+  <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<!--[if IE 8]>
+  <link rel="stylesheet" type="text/css" href="../assets/cardinal/css/ie/ie8.css" />
+<![endif]-->
+<!--[if IE 7]>
+  <link rel="stylesheet" type="text/css" href="../assets/cardinal/css/ie/ie7.css" />
+<![endif]-->
+<!-- JS and jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="../assets/cardinal/js/modernizr.custom.17475.js"></script>
+<script src="../assets/cardinal/js/bootstrap.min.js"></script>
+<script src="../assets/cardinal/js/bootstrap.youtubepopup.min.js"></script>
+<!--[if lt IE 9]>
+	<script src="../assets/cardinal/js/respond.js"></script>
+<![endif]-->
+
+<!-- custom JS -->
+<script src="../assets/cardinal/js/base.js?v=1.0"></script>
+<script src="../assets/cardinal/js/custom.js"></script>
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+<!-- InstanceParam name="site_name_1" type="text" value="Financial Aid" -->
+<!-- InstanceParam name="site_name_2" type="text" value="Line 2" -->
+<!-- InstanceParam name="site_slogan" type="text" value="Site slogan" -->
+<!-- InstanceParam name="site_url" type="text" value="/" -->
+<!-- InstanceParam name="body_class" type="text" value="home" -->
+<!-- InstanceParam name="h1" type="text" value="Page Not Found" -->
+</head>
+<!-- Stanford Cardinal Templates Version 1.0 -->
+<!-- Template Property Options:                       
+     body_class: "home", "nav-1", "nav-2", etc.  - underlines active menu item
+                 "two-line-header" - generates two line header signature
+                 "site-slogan"     - adds site slogan to signature
+     e.g. <body class="two-line-header nav-4">            
+     h1        : "hide" - creates a hidden <h1> element
+ -->
+
+<body class="home">
+<div id="su-wrap"> <!-- used to force footer to bottom of short pages -->
+  <div id="su-content"> <!-- used to force footer to bottom of short pages --> 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y58EHJMVGH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Y58EHJMVGH');
+</script>
+
+
+<!--=== Top ===-->
+<div id="top">
+  <div class="container"> 
+    <!--=== Skip links ===-->
+    <div id="skip"> <a href="#content" onClick="$('#content').focus()" aria-hidden="true">Skip to content</a> </div>
+    <!-- /Skip links --> 
+  </div>
+</div>
+<!--/top--> 
+
+<!--=== Header ===-->
+<div id="header" class="clearfix" role="banner">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8"> 
+        <!-- Logo -->
+        <div id="logo" class="clearfix"> <a href="https://www.stanford.edu/"><img class="img-responsive" src="https://financialaid.stanford.edu/assets/cardinal/images/stanford-white@2x.png"  alt="Stanford University" /></a> </div>
+        <!-- /logo -->
+        <div id="signature">
+          <div id="site-name"> <a href="/"> <span id="site-name-1">Financial Aid</span> <span id="site-name-2">Optional line 2 - add two-line-signature to body class to display</span> </a> </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Menu --> 
+<!--<div id="mainmenu" class="clearfix" role="navigation">-->
+<div id="mainmenu" class="clearfix" role="navigation"  data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+  <div class="container">
+    <div class="navbar navbar-default"> 
+      
+      <!-- main navigation -->
+      <button type="button" class="navbar-toggle btn-navbar" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="menu-text">Menu</span></button>
+      <!-- /nav-collapse -->
+      
+      <div class="navbar-collapse collapse"> 
+        <!--search box-->
+        <div id="nav-search" role="search">
+          <form action="/search/" method="get" id="search-form" accept-charset="UTF-8">
+            <h2 class="hidden">Search form</h2>
+            <label class="hidden" for="search-field">Search term</label>
+            <input name="cx" type="hidden" value="005252872952349847953:m_3bauv2bsg">
+            <input name="cof" type="hidden" value="FORID:9">
+            <input name="ie" type="hidden" value="UTF-8">
+            <!-- replace value in next line with your site URL -->
+            <input name="as_sitesearch" type="hidden" value="/">
+            <input title="Search string" class="input-medium" placeholder="Search Financial Aid&hellip;" type="text" id="search-field" name="q" value="" size="15" maxlength="128" />
+            <button id="search-btn" type="submit" name="submit"  aria-label="Search" formmethod="get"><i class="fa fa-search"></i></button>
+          </form>
+        </div>
+        <div  role="navigation">
+          <div id="primary-nav" tabindex="0">
+            <ul class="nav navbar-nav" aria-label="primary navigation">
+              <li id="nav-1"> <a href="/undergrad/">Undergraduate Basics</a> </li>
+              <li id="nav-2"> <a href="/grad/">Graduate Basics</a> </li>
+              <li id="nav-3"> <a href="/aid/">Managing My Aid</a> </li>
+              <li id="nav-4"> <a href="/loans/" title="Loans Link in Site Header">Loans</a> </li>
+            </ul>
+          </div>
+          <div id="gateway-nav">
+            <h4><span class="fa fa-chevron-circle-right"></span>Information for...</h4>
+            <ul id="gateways" class="pull-right" aria-label="gateways">
+              <li id="nav-5"><a href="/site/forms" title="FAO forms link in site header"><i class="fa fa-pencil fa-fw"></i>Forms</a></li>
+              <li id="nav-6"><a href="/parents">Parents</a></li>
+              <li id="nav-7"><a href="/faculty_staff">Faculty / Staff</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- /nav-collapse --> 
+    </div>
+    <!-- /navbar --> 
+  </div>
+  <!-- /container --> 
+</div>
+<!-- /mainmenu --> 
+
+
+
+ 
+    <!-- Content -->
+    <div id="content" class="container" role="main" tabindex="0">
+      <h1 class="Page Not Found"><!-- InstanceBeginEditable name="Page Title" -->Page Not Found<!-- InstanceEndEditable --></h1>
+      <div class="row"> 
+        
+        <!--  #main-content (Center) -->
+        <div id="main-content" class="col-md-12" role="main"> <!-- InstanceBeginEditable name="content_main" -->
+          <h2>The page you requested cannot be found</h2>
+          <p>You may have used an outdated link or may have typed the address (URL) incorrectly. If you entered the URL manually, please check your spelling and try again.</p>
+          <h3>Financial Aid Office</h3>
+          <ul>
+            <li><a href="http://financialaid.stanford.edu/index.html">Home</a></li>
+            <li><a href="../site/sitemap/index.html">Site map</a></li>
+          </ul>
+          <h3>Stanford University</h3>
+           <ul>
+            <li><a href="https://www.stanford.edu">Stanford University Home</a></li>
+            <li><a href="https://www.stanford.edu/search">Stanford University Search</a></li>
+            <li><a href="https://www.stanford.edu/list/academic">Stanford Academic Departments</a></li>
+          </ul>
+          <p>If you think you have reached this page due to a server error, please contact <em><a href="http://helpsu.stanford.edu">HelpSU</a></em>.</p>
+          <!-- InstanceEndEditable --> <!-- #BeginLibraryItem "/Library/last_update.lbi" --><span style="font-size:10px;">Updated on <!-- #BeginDate format:Am1a -->July 29, 2024 2:40 PM<!-- #EndDate --></span><!-- #EndLibraryItem --></div>
+        <!--  End #main-content (Center) --> 
+        
+      </div>
+    </div>
+    <!-- #content--> 
+    
+  </div>
+  <!-- #su-content --> 
+</div>
+<!-- #su-wrap --> 
+<!-- BEGIN footer -->
+<div id="footer" class="clearfix footer" role="contentinfo"> 
+  <!-- Fat footer start -->
+  <div class="container">
+    <div id="footer-content" class="row">
+      <div id="social-icons" class="col-xs-12 col-sm-3">
+        <div class="block">
+          <h3>Connect with us</h3>
+          <ul class="footer-list">
+            <li> <a href="https://www.youtube.com/c/StanfordFinancialAid"><img alt="YouTube" src="https://financialaid.stanford.edu/assets/cardinal/images/social/youtube@2x.png" /></a> </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-3">
+        <div class="block">
+          <h3>Visit Campus</h3>
+          <ul class="footer-list">
+            <li><a href="https://visit.stanford.edu/">Visitor Information</a></li>
+            <li><a href="https://campus-map.stanford.edu/">Campus Map</a></li>
+          </ul>
+          <h3>Apply</h3>
+          <ul class="footer-list">
+            <li><a href="https://admission.stanford.edu/">Undergraduate Admission</a></li>
+            <li><a href="https://gradadmissions.stanford.edu/">Graduate Admission</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-3">
+        <div class="block">
+          <h3>Resources</h3>
+          <ul  class="footer-list">
+            <li><a href="https://vpge.stanford.edu/gateways/new-students">Gateway for New Grad Students</a></li>
+            <li><a href="https://studentservices.stanford.edu/" title="Student Services Center link in footer">Student Services Center</a></li>
+            <li><a href="https://mindovermoney.stanford.edu">Mind Over Money</a></li>
+          </ul>
+          <h3>Financial Aid Offices</h3>
+          <ul class="footer-list">
+            <li><a href="https://www.gsb.stanford.edu/programs/mba/financial-aid">Graduate School of Business</a></li>
+            <li><a href="https://law.stanford.edu/office-of-financial-aid/">Law School</a></li>
+            <li><a href="https://med.stanford.edu/md/financial-aid.html">School of Medicine</a></li>
+          </ul>
+        </div>
+      </div>
+      <div id="hp-buttons" class="col-xs-12 col-sm-3">
+        <ul>
+          <li><a href="/site/faq" class="btn btn-u btn-block"><i class="fa fa-question fa-fw"></i> <span>FAQ</span></a> </li>
+          <li><a href="https://axess.sahr.stanford.edu" class="btn btn-u btn-block" title="Axess link in footer"><i class="fa fa-key fa-fw"></i> <span>AXESS</span></a> </li>
+          <li><a href="/contact" class="btn btn-u btn-block" title="Contact Us link in footer"><i class="fa fa-comment-o fa-fw"></i> <span>Contact Us</span></a> </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Fat footer end --> 
+  
+  <!-- Global footer snippet start -->
+  <div id="global-footer">
+    <div class="container">
+      <div class="row">
+        <div id="bottom-logo" class="col-xs-6 col-sm-2"> <a href="https://www.stanford.edu"> <img src="//financialaid.stanford.edu/assets/cardinal/images/footer-stanford-logo@2x.png" alt="Stanford University" width="120" height="56"/> </a> </div>
+        <!-- #bottom-logo end -->
+        <div id="bottom-text" class="col-xs-6 col-sm-10">
+           <ul>
+      <li class="home"><a href="https://www.stanford.edu">Stanford Home</a></li>
+      <li class="maps alt"><a href="https://visit.stanford.edu/plan/">Maps &amp; Directions</a></li>
+      <li class="search-stanford"><a href="https://www.stanford.edu/search/">Search Stanford</a></li>
+      <li class="emergency alt"><a href="https://emergency.stanford.edu">Emergency Info</a></li>
+    </ul>
+    <ul id="policy-links">
+      <li><a href="https://www.stanford.edu/site/terms/" title="Terms of use for sites">Terms of Use</a></li>
+      <li><a href="https://www.stanford.edu/site/privacy/" title="Privacy and cookie policy">Privacy</a></li>
+      <li><a href="https://uit.stanford.edu/security/copyright-infringement" title="Report alleged copyright infringement">Copyright</a></li>
+      <li><a href="https://adminguide.stanford.edu/chapter-1/subchapter-5/policy-1-5-4" title="Ownership and use of Stanford trademarks and images">Trademarks</a></li>
+      <li><a href="https://exploredegrees.stanford.edu/nonacademicregulations/nondiscrimination/" title="Non-discrimination policy">Non-Discrimination</a></li>
+      <li><a href="https://www.stanford.edu/site/accessibility" title="Report web accessibility issues">Accessibility</a></li>
+    </ul>
+        </div>
+        <!-- .bottom-text end -->
+        <div class="clear"></div>
+        <p class="copyright vcard col-sm-10">&copy; <span class="fn org">Stanford University</span>. <span class="adr"> <span class="locality"> Stanford</span>, <span class="region">California</span> <span class="postal-code">94305</span></span>.</p>
+      </div>
+      <!-- .row end --> 
+    </div>
+    <!-- .container end --> 
+  </div>
+  <!-- Global footer snippet end --> 
+</div>
+<!-- END footer --> 
+<script src="https://financialaid.stanford.edu/assets/cardinal/js/tracking.js?v=1.0"></script> 
+<!-- Sticky Menu -->
+<script type="text/javascript">
+	$(window).on('scroll', function(){
+		var position = $(this).scrollTop();
+		if(position > 60) {
+			$('#mainmenu').addClass('sticky-nav');
+		} else {
+			$('#mainmenu').removeClass('sticky-nav');
+		}		
+	});
+</script>
+<!-- End Sticky Menu --> 
+<!-- Siteimprove Analytics -->
+<script type="text/javascript">
+/*<![CDATA[*/
+(function() {
+	var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;
+	sz.src = '//siteimproveanalytics.com/js/siteanalyze_80352.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(sz, s);
+})();
+/*]]>*/
+</script>
+<!-- Chatbot Cardy the Tree -->
+<script type="text/javascript" src="https://ai.ocelotbot.com/embed/standard/e3e5b0d5-933d-4e12-8715-55143d253a73?ha=right&amp;hv=16px&amp;va=bottom&amp;vv=16px&amp;ts=0&amp;bs=calloutBubble&amp;av=0"></script>
+<!-- End Siteimprove Analytics -->
+<!-- Chat -->
+<!--<script type="text/javascript" src="https://ai.ocelotbot.com/embed/standard/e3e5b0d5-933d-4e12-8715-55143d253a73?ha=right&amp;hv=16px&amp;va=bottom&amp;vv=16px&amp;ts=0&amp;bs=calloutBubble&amp;av=0"></script>-->
+
+
+</body>
+<!-- InstanceEnd --></html>

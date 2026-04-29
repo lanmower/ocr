@@ -1,0 +1,57 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Length 1134 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+12 TL
+(COMMERCE BANK - Business Checking Statement) Tj T*
+(Account: 4521-XXXX-XXXX-7890) Tj T*
+(Period: 01/01/2024 - 31/01/2024) Tj T*
+() Tj T*
+(Date        Description                    Amount      Balance) Tj T*
+(----------  -----------------------------  ----------  ----------) Tj T*
+(01/01/2024  OPENING BALANCE                     +0.00  $12,450.00) Tj T*
+(01/04/2024  CLIENT PAYMENT - INV 1041       +4,500.00  $16,950.00) Tj T*
+(01/08/2024  OFFICE SUPPLIES - STAPLES         -234.56  $16,715.44) Tj T*
+(01/11/2024  PAYROLL - EMPLOYEE 001          -2,800.00  $13,915.44) Tj T*
+(01/11/2024  PAYROLL - EMPLOYEE 002          -2,400.00  $11,515.44) Tj T*
+(01/15/2024  CLIENT PAYMENT - INV 1042       +3,200.00  $14,715.44) Tj T*
+(01/18/2024  UTILITIES - GAS & ELECTRIC        -456.78  $14,258.66) Tj T*
+(01/22/2024  INSURANCE PREMIUM                 -890.00  $13,368.66) Tj T*
+(01/25/2024  VENDOR PAYMENT - SUPPLIES CO    -1,234.00  $12,134.66) Tj T*
+(01/31/2024  BANK SERVICE FEE                   -15.00  $12,119.66) Tj T*
+() Tj T*
+(Opening Balance: $1,250.00) Tj T*
+(Closing Balance: $12,119.66) Tj T*
+ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 3 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000001301 00000 n 
+0000001427 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1495
+startxref
+1495
+%%EOF

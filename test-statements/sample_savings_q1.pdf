@@ -1,0 +1,55 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Length 988 >>
+stream
+BT
+/F1 10 Tf
+50 750 Td
+12 TL
+(METRO CREDIT UNION - Savings Account Statement) Tj T*
+(Account: 4521-XXXX-XXXX-7890) Tj T*
+(Period: 01/01/2024 - 31/01/2024) Tj T*
+() Tj T*
+(Date        Description                    Amount      Balance) Tj T*
+(----------  -----------------------------  ----------  ----------) Tj T*
+(01/02/2024  OPENING DEPOSIT                   +500.00   $5,500.00) Tj T*
+(01/15/2024  TRANSFER FROM CHECKING            +300.00   $5,800.00) Tj T*
+(02/01/2024  INTEREST EARNED                    +14.50   $5,814.50) Tj T*
+(02/15/2024  TRANSFER FROM CHECKING            +300.00   $6,114.50) Tj T*
+(03/01/2024  INTEREST EARNED                    +15.29   $6,129.79) Tj T*
+(03/10/2024  WITHDRAWAL - EMERGENCY FUND     -1,000.00   $5,129.79) Tj T*
+(03/15/2024  TRANSFER FROM CHECKING            +300.00   $5,429.79) Tj T*
+(03/31/2024  INTEREST EARNED                    +13.57   $5,443.36) Tj T*
+() Tj T*
+(Opening Balance: $1,250.00) Tj T*
+(Closing Balance: $5,443.36) Tj T*
+ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 3 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000001154 00000 n 
+0000001280 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1348
+startxref
+1348
+%%EOF

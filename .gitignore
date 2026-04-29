@@ -9,7 +9,6 @@ output-mini/
 tmp/
 tmp-llama/
 ollama/
-test-statements/
 test-results/
 llama-server.log
 # >>> gm managed (do not edit between markers)
