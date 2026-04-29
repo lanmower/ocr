@@ -2,7 +2,6 @@
 /models
 *.rten
 .codeinsight
-.gm-stop-verified
 models/
 output/
 output-local/
@@ -10,3 +9,25 @@ output-mini/
 tmp/
 tmp-llama/
 ollama/
+test-statements/
+test-results/
+llama-server.log
+# >>> gm managed (do not edit between markers)
+.gm-stop-verified
+.gm/prd-state.json
+.gm/rslearn-counter.json
+.gm/git-block-counter.json
+.gm/learning-state.md
+.gm/trajectory-drafts/
+.gm/ingest-drafts/
+.gm/needs-gm
+.gm/lastskill
+.gm/turn-state.json
+.gm/no-memorize-this-turn
+.gm/prd.paused.yml
+# tracked: .gm/rs-learn.db, .gm/code-search/, AGENTS.md, .gm/prd.yml
+# <<< gm managed
+.plugkit-browser-profile/
+.plugkit-browser-profile-*/
+.plugkit-agent-worktree/
+*.stackdump

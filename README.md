@@ -1,25 +1,20 @@
 # ocr
 
-Batch bank statement processor — vision LLM reads PDF/image pages directly, outputs CSV/JSON. No OCR step.
+Batch bank statement processor — Gemma 4 vision LLM reads PDF/image pages directly, outputs CSV/JSON. No OCR step.
 
 ## Requirements
 
-- [Ollama](https://ollama.com) running locally with `gemma4:e2b` pulled
-
-```
-ollama pull gemma4:e2b
-```
-
-## Download
-
-Get `ocr.exe` from the [latest release](https://github.com/lanmower/ocr/releases/tag/latest).
+- Windows (x64)
+- `tmp-llama/` runtime bundle: `model-q4km.gguf`, `mmproj-google_gemma-4-E2B-it-f16.gguf`, `b8785-extracted/llama-server.exe`
 
 ## Usage
 
+`start.bat` boots `llama-server` on `127.0.0.1:8080`, waits for `/health`, runs the pipeline, then shuts the server down.
+
 ```
-ocr --input ./statements --output ./results --format csv
-ocr --input ./statements --output ./results --format text
-ocr --input ./statements --output ./results --format json
+start.bat --input ./statements --output ./results --format csv
+start.bat --input ./statements --output ./results --format text
+start.bat --input ./statements --output ./results --format json
 ```
 
 ## Build
