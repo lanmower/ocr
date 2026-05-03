@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
 set SCRIPT_DIR=%~dp0
 set LLM_DIR=%SCRIPT_DIR%tmp-llama
@@ -27,27 +27,30 @@ if not exist "%MMPROJ%" (
 
 if not exist "%SERVER%" (
     set VARIANT=cpu
-    wmic path win32_videocontroller get name 2>nul | findstr /i "NVIDIA" >nul 2>&1
+    powershell -Command "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name" 2>nul | findstr /i "NVIDIA" >nul 2>&1
     if not errorlevel 1 set VARIANT=cuda
-    if "%VARIANT%"=="cpu" (
-        wmic path win32_videocontroller get name 2>nul | findstr /i "AMD\|Radeon\|Intel" >nul 2>&1
+    if "!VARIANT!"=="cpu" (
+        powershell -Command "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name" 2>nul | findstr /i "AMD" >nul 2>&1
         if not errorlevel 1 set VARIANT=vulkan
     )
-    echo Detected variant: %VARIANT%
-    set SERVER_URL=https://github.com/ggml-org/llama.cpp/releases/download/b8785/llama-b8785-bin-win-%VARIANT%-x64.zip
-    if "%VARIANT%"=="cuda" set SERVER_URL=https://github.com/ggml-org/llama.cpp/releases/download/b8785/llama-b8785-bin-win-cuda-12.4-x64.zip
-    echo Downloading llama-server ^(%VARIANT%^)...
-    curl -L -o "%SERVER_ZIP%" "%SERVER_URL%" || goto fail
+    if "!VARIANT!"=="cpu" (
+        powershell -Command "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name" 2>nul | findstr /i "Radeon" >nul 2>&1
+        if not errorlevel 1 set VARIANT=vulkan
+    )
+    echo Detected variant: !VARIANT!
+    set SERVER_URL=https://github.com/ggml-org/llama.cpp/releases/download/b8785/llama-b8785-bin-win-!VARIANT!-x64.zip
+    if "!VARIANT!"=="cuda" set SERVER_URL=https://github.com/ggml-org/llama.cpp/releases/download/b8785/llama-b8785-bin-win-cuda-12.4-x64.zip
+    echo Downloading llama-server ^(!VARIANT!^)...
+    curl -L -o "%SERVER_ZIP%" "!SERVER_URL!" || goto fail
     if not exist "%SERVER_DIR%" mkdir "%SERVER_DIR%"
     powershell -Command "Expand-Archive -Force '%SERVER_ZIP%' '%SERVER_DIR%'" || goto fail
     del "%SERVER_ZIP%"
-    if "%VARIANT%"=="cuda" (
-        set CUDART_ZIP=%LLM_DIR%\cudart.zip
-        curl -L -o "%CUDART_ZIP%" "https://github.com/ggml-org/llama.cpp/releases/download/b8785/cudart-llama-bin-win-cuda-12.4-x64.zip" || goto fail
-        powershell -Command "Expand-Archive -Force '%CUDART_ZIP%' '%SERVER_DIR%'" || goto fail
-        del "%CUDART_ZIP%"
+    if "!VARIANT!"=="cuda" (
+        curl -L -o "%LLM_DIR%\cudart.zip" "https://github.com/ggml-org/llama.cpp/releases/download/b8785/cudart-llama-bin-win-cuda-12.4-x64.zip" || goto fail
+        powershell -Command "Expand-Archive -Force '%LLM_DIR%\cudart.zip' '%SERVER_DIR%'" || goto fail
+        del "%LLM_DIR%\cudart.zip"
     )
-    echo %VARIANT%>"%VARIANT_FILE%"
+    echo !VARIANT!>"%VARIANT_FILE%"
 )
 
 echo Setup complete.
