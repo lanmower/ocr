@@ -20,8 +20,16 @@ if not exist "%SCRIPT_DIR%target\release\ocr.exe" (
     cargo build --release || exit /b 1
 )
 
+REM Set GPU layers based on detected variant
+set NGL=0
+if exist "%LLM_DIR%\variant.txt" (
+    set /p VARIANT=<"%LLM_DIR%\variant.txt"
+    if /i "%VARIANT%"=="cuda" set NGL=99
+    if /i "%VARIANT%"=="vulkan" set NGL=99
+)
+
 REM Start llama-server in background
-start /b "" "%SERVER%" -m "%MODEL%" --mmproj "%MMPROJ%" --host 127.0.0.1 --port 8080 -ngl 0 -rea off --path "%SCRIPT_DIR%web"
+start /b "" "%SERVER%" -m "%MODEL%" --mmproj "%MMPROJ%" --host 127.0.0.1 --port 8080 -ngl %NGL% -rea off --path "%SCRIPT_DIR%web"
 
 REM Wait for server ready
 :wait
