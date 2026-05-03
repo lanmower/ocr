@@ -9,6 +9,7 @@ pub enum OutputFormat {
     Csv,
     Text,
     Json,
+    Describe,
 }
 
 pub struct Job {
@@ -48,6 +49,7 @@ fn process_one(job: &Job) -> Result<PathBuf> {
         OutputFormat::Csv => "csv",
         OutputFormat::Text => "txt",
         OutputFormat::Json => "json",
+        OutputFormat::Describe => "txt",
     };
     let out_path = job.output_dir.join(format!("{}.{}", stem, ext));
 
@@ -67,6 +69,10 @@ fn process_one(job: &Job) -> Result<PathBuf> {
         }
         OutputFormat::Text => {
             llm::write_text(&images, &mut file)?;
+        }
+        OutputFormat::Describe => {
+            let text = llm::process_images_to_describe(&images, &job.model)?;
+            std::io::Write::write_all(&mut file, text.as_bytes())?;
         }
         OutputFormat::Json => {
             let result = llm::process_images_to_json(&images, &job.model)?;

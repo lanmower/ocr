@@ -30,7 +30,8 @@ fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
         "csv" => Ok(pipeline::OutputFormat::Csv),
         "json" => Ok(pipeline::OutputFormat::Json),
         "text" | "txt" => Ok(pipeline::OutputFormat::Text),
-        _ => Err(format!("unknown format: {}, use csv, json or text", s)),
+        "describe" => Ok(pipeline::OutputFormat::Describe),
+        _ => Err(format!("unknown format: {}, use csv, json, text or describe", s)),
     }
 }
 
