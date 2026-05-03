@@ -21,7 +21,7 @@ if not exist "%SCRIPT_DIR%target\release\ocr.exe" (
 )
 
 REM Start llama-server in background
-start /b "" "%SERVER%" -m "%MODEL%" --mmproj "%MMPROJ%" --host 127.0.0.1 --port 8080 -ngl 0 -rea off
+start /b "" "%SERVER%" -m "%MODEL%" --mmproj "%MMPROJ%" --host 127.0.0.1 --port 8080 -ngl 0 -rea off --path "%SCRIPT_DIR%web"
 
 REM Wait for server ready
 :wait

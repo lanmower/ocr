@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Chat</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #111; color: #eee; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 24px 16px; gap: 16px; }
+  h1 { font-size: 1.4rem; font-weight: 600; }
+  video { width: 100%; max-width: 480px; border-radius: 8px; background: #000; }
+  canvas { display: none; }
+  textarea { width: 100%; max-width: 480px; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #1e1e1e; color: #eee; font-size: 1rem; resize: vertical; min-height: 70px; }
+  button { padding: 10px 28px; border-radius: 6px; border: none; background: #4a7cfc; color: #fff; font-size: 1rem; cursor: pointer; }
+  button:disabled { background: #555; cursor: not-allowed; }
+  #response { width: 100%; max-width: 480px; background: #1e1e1e; border-radius: 8px; padding: 14px; white-space: pre-wrap; font-size: 0.95rem; line-height: 1.5; min-height: 60px; border: 1px solid #333; }
+  #status { font-size: 0.85rem; color: #888; }
+</style>
+</head>
+<body>
+<h1>Vision Chat</h1>
+<video id="cam" autoplay playsinline muted></video>
+<canvas id="snap"></canvas>
+<textarea id="prompt" placeholder="Ask about what you see...">Describe every detail visible in this image.</textarea>
+<button id="btn" onclick="submit()">Send</button>
+<div id="status"></div>
+<div id="response"></div>
+
+<script>
+const video = document.getElementById('cam');
+const canvas = document.getElementById('snap');
+const btn = document.getElementById('btn');
+const statusEl = document.getElementById('status');
+const responseEl = document.getElementById('response');
+
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => { video.srcObject = stream; statusEl.textContent = 'Camera ready'; })
+  .catch(err => { statusEl.textContent = 'Camera error: ' + err.message; });
+
+function captureFrame() {
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  return canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+}
+
+async function submit() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) return;
+  btn.disabled = true;
+  statusEl.textContent = 'Sending...';
+  responseEl.textContent = '';
+  const b64 = captureFrame();
+  try {
+    const res = await fetch('/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gemma',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + b64 } }
+          ]
+        }]
+      })
+    });
+    const data = await res.json();
+    let text = data.choices?.[0]?.message?.content ?? JSON.stringify(data);
+    text = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+    responseEl.textContent = text;
+    statusEl.textContent = 'Done';
+  } catch (e) {
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
