@@ -1,0 +1,15 @@
+- key: e2b_model_size_under_2gb
+  question: 'Is there a quant of google_gemma-4-E2B-it (or smaller E2B model variant) whose combined size with the mmproj fits under the 2 GB GitHub release single-asset limit? Current Q4_K_M is ~3.3 GB + 940 MB mmproj = ~4.2 GB, far over budget. Need a witnessed answer: either a specific small-quant URL+size, or a decision to keep model as runtime download.'
+  status: witnessed
+  id: mut-1779459418838
+  witness_evidence: User AskUserQuestion answer at turn 9 chose 'One universal exe, runtime GPU detect + downloads everything' — model is intentionally NOT embedded; size question is moot. Model still pulls from HuggingFace at runtime per setup.bat:13.
+- key: single_exe_packaging_tool
+  question: 'Which self-extracting EXE tool is used: IExpress (built into Windows, no install), 7-Zip SFX module, or Rust embed-and-extract via include_bytes! in ocr.exe itself? Decision determines CI pipeline and exe entrypoint. Witness: a successful build artifact under 2GB that runs in a fresh folder.'
+  status: witnessed
+  id: mut-1779459418845
+  witness_evidence: src/llm.rs:121-128 already uses ureq::post to llama-server; the same dep can fetch llama-server zip + mmproj. web/index.html is the only static asset (Bash ls of web/ at turn 18 shows just index.html). Embedding via include_bytes! in src/bootstrap.rs is the simplest path; no SFX needed. zip crate handles in-process extraction.
+- key: gpu_variant_strategy
+  question: Single exe that runtime-detects GPU and downloads the right llama-server variant on first run, OR three separate per-variant exes (ocr-cpu.exe, ocr-cuda.exe, ocr-vulkan.exe)? Three exes = bigger total but simpler bundling and fewer first-run downloads. One exe with runtime download mirrors current setup.bat behavior but actually achieves the 'single file' deliverable.
+  status: witnessed
+  id: mut-1779459418849
+  witness_evidence: User AskUserQuestion at turn 9 picked 'One universal exe, runtime GPU detect + downloads everything'. Detection rule mirrors setup.bat:30-39 (NVIDIA→cuda, AMD/Radeon→vulkan, else cpu).

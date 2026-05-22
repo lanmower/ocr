@@ -1,0 +1,32 @@
+- title: Add bootstrap module to ocr.exe
+  detail: 'New src/bootstrap.rs that owns: (a) detect GPU via PowerShell Win32_VideoController, return variant cpu/cuda/vulkan; (b) define cache layout under exe-dir/.ocr-runtime/ holding llama-server/, model.gguf, mmproj.gguf, variant.txt; (c) download missing artifacts via ureq with progress to stderr; (d) extract llama-server + cudart zips using zip crate; (e) spawn llama-server as child process bound to 127.0.0.1:8080 with -ngl 99/0 per variant + --path pointing at embedded web/ extracted to runtime cache; (f) wait for /health to return ok before returning.'
+  id: item-1779459700829
+  status: pending
+- title: Embed web UI in ocr.exe
+  detail: Use include_bytes!("../web/index.html") (and any other web assets) so the single exe carries the chat UI. On bootstrap, write it to exe-dir/.ocr-runtime/web/ and pass --path to llama-server. No external web/ dir needed in distribution.
+  id: item-1779459700837
+  status: pending
+- title: Wire ocr.exe CLI to ensure bootstrap runs
+  detail: 'main.rs gains: if invoked with no args or with --serve, run bootstrap and keep llama-server running as foreground (this is the ''just run the exe'' mode that pops the webcam chat UI). If invoked with --input, run bootstrap (idempotent — only downloads what''s missing), then proceed with existing OCR batch pipeline. Default URL printed to stderr: http://127.0.0.1:8080/'
+  id: item-1779459700842
+  status: pending
+- title: Add zip + indicatif dependencies to Cargo.toml
+  detail: 'Add `zip = { version = "2", default-features = false, features = ["deflate"] }` for in-process extraction (no PowerShell dependency at runtime). Optional: `indicatif` for download progress bars; otherwise just stderr percentage prints.'
+  id: item-1779459700847
+  status: pending
+- title: Rewrite release.yml to ship a single artifact
+  detail: 'Replace per-variant ZIP bundling with: cargo build --release, attach only target/release/ocr.exe to the GitHub release (tag ''latest''). Drop the llama-server fetching/extracting in CI — runtime does it now. Keep windows-latest runner. Result: one ~50 MB ocr.exe per release.'
+  id: item-1779459700852
+  status: pending
+- title: Verify exe in fresh folder
+  detail: 'Build the new ocr.exe, copy ONLY ocr.exe into a fresh C:\Users\user\AppData\Local\Temp\ocr-fresh\, run it, confirm: (a) GPU detection prints expected variant, (b) llama-server downloads + extracts, (c) model + mmproj download, (d) llama-server starts and /health returns ok, (e) webcam chat UI accessible at http://127.0.0.1:8080/. Witness: HTTP 200 from /health and from /.'
+  id: item-1779459700856
+  status: pending
+- title: Update AGENTS.md + delete obsolete bat files
+  detail: 'Rewrite AGENTS.md to describe the single-exe architecture and runtime cache layout. Delete setup.bat / start.bat / ocr.bat / describe.bat once ocr.exe subsumes their behavior. Witness: clean git status after removals and AGENTS.md update.'
+  id: item-1779459700861
+  status: pending
+- title: CI uploads auxiliary runtime assets once per release
+  detail: 'User request: host mmproj-google_gemma-4-E2B-it-f16.gguf (~940 MB) and the three llama-server zips (cpu/cuda+cudart/vulkan) as assets on the same ''latest'' GitHub release alongside ocr.exe. Model gguf is 3.3 GB — exceeds 2 GB per-asset cap, so model still pulled from HuggingFace. CI downloads the upstream files, attaches to release. ocr.exe''s bootstrap prefers our release URL for mmproj + llama-server zips (faster + stable URLs) and falls back to upstream if 404. Witness: release page shows ocr.exe + mmproj.gguf + llama-cpu.zip + llama-cuda.zip + cudart.zip + llama-vulkan.zip.'
+  id: item-1779459751922
+  status: pending

@@ -1,3 +1,4 @@
+mod bootstrap;
 mod llm;
 mod pdf;
 mod pipeline;
@@ -7,10 +8,10 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[command(name = "ocr", about = "Batch bank statement processing via vision LLM")]
+#[command(name = "ocr", about = "Single-exe vision LLM bundle (webcam chat UI + batch OCR)")]
 struct Cli {
     #[arg(short, long)]
-    input: PathBuf,
+    input: Option<PathBuf>,
 
     #[arg(short, long, default_value = "./output")]
     output: PathBuf,
@@ -23,6 +24,10 @@ struct Cli {
 
     #[arg(long, default_value = llm::default_model_name())]
     model: String,
+
+    /// Keep llama-server running in foreground (default when no --input given)
+    #[arg(long)]
+    serve: bool,
 }
 
 fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
@@ -38,9 +43,23 @@ fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    let inputs = pipeline::collect_inputs(&cli.input);
+    let mut server = bootstrap::ensure_running()?;
+
+    if cli.input.is_none() || cli.serve {
+        eprintln!();
+        eprintln!("==============================================");
+        eprintln!("  Webcam chat UI ready at: http://127.0.0.1:8080/");
+        eprintln!("  Press Ctrl-C to stop.");
+        eprintln!("==============================================");
+        let _ = server.wait();
+        return Ok(());
+    }
+
+    let input = cli.input.expect("checked above");
+    let inputs = pipeline::collect_inputs(&input);
     if inputs.is_empty() {
-        anyhow::bail!("no PDF or image files found in {}", cli.input.display());
+        let _ = server.kill();
+        anyhow::bail!("no PDF or image files found in {}", input.display());
     }
 
     eprintln!("Processing {} files...", inputs.len());
@@ -55,6 +74,8 @@ fn main() -> Result<()> {
     let ok = results.iter().filter(|r| r.is_ok()).count();
     let err = results.iter().filter(|r| r.is_err()).count();
     eprintln!("Done: {} succeeded, {} failed", ok, err);
+
+    let _ = server.kill();
 
     if err > 0 {
         std::process::exit(1);

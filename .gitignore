@@ -30,6 +30,12 @@ llama-server.log
 .gm/prd.paused.yml
 .gm/rs-learn.db-shm
 .gm/rs-learn.db-wal
+.gm/exec-spool/
+.gm/turn-state.json.corrupted-*
+.gm/last-instruction-ts
+.gm/last-prompt.txt
+.gm/next-step.md
+.gm/imported-claude-md-*.md
 # tracked: .gm/rs-learn.db, .gm/code-search/, AGENTS.md, .gm/prd.yml
 # <<< gm managed
 
