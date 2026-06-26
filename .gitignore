@@ -36,6 +36,7 @@ llama-server.log
 .gm/last-prompt.txt
 .gm/next-step.md
 .gm/imported-claude-md-*.md
+.gm/last-dispatch-ts
 # tracked: .gm/rs-learn.db, .gm/code-search/, AGENTS.md, .gm/prd.yml
 # <<< gm managed
 
