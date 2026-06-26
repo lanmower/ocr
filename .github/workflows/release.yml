@@ -22,7 +22,7 @@ jobs:
             "llama-b8785-bin-win-cuda-12.4-x64.zip" = "$base/llama-b8785-bin-win-cuda-12.4-x64.zip"
             "cudart-llama-bin-win-cuda-12.4-x64.zip" = "$base/cudart-llama-bin-win-cuda-12.4-x64.zip"
             "llama-b8785-bin-win-vulkan-x64.zip"  = "$base/llama-b8785-bin-win-vulkan-x64.zip"
-            "gemma-4-E2B-it-mmproj.gguf" = "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B-it-mmproj.gguf"
+            "gemma-4-E2B-it-mmproj.gguf" = "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-mobile-GGUF/resolve/main/mmproj-BF16.gguf"
           }
           foreach ($name in $assets.Keys) {
             $out = "dist\$name"

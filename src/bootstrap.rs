@@ -8,10 +8,10 @@ use std::time::Duration;
 const RELEASE_BASE: &str = "https://github.com/lanmower/ocr/releases/download/latest";
 const UPSTREAM_LLAMA: &str = "https://github.com/ggml-org/llama.cpp/releases/download/b8785";
 const MODEL_URL: &str =
-    "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf";
+    "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-mobile-GGUF/resolve/main/gemma-4-E2B-it-qat-UD-Q2_K_XL.gguf";
 const MMPROJ_NAME: &str = "gemma-4-E2B-it-mmproj.gguf";
 const MMPROJ_UPSTREAM: &str =
-    "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B-it-mmproj.gguf";
+    "https://huggingface.co/unsloth/gemma-4-E2B-it-qat-mobile-GGUF/resolve/main/mmproj-BF16.gguf";
 
 static WEB_INDEX: &[u8] = include_bytes!("../web/index.html");
 

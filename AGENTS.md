@@ -5,8 +5,8 @@
 `ocr.exe` is a self-contained Windows binary. On first run it populates `<exe-dir>/.ocr-runtime/`:
 
 - `llama/llama-server.exe` (+ DLLs from the variant zip, + cudart DLLs if CUDA)
-- `model.gguf` (~3.3 GB official Google Gemma 4 E2B QAT q4_0 from HuggingFace — never bundled, exceeds GH's 2 GB per-asset cap)
-- `gemma-4-E2B-it-mmproj.gguf` (~987 MB — bundled on our release, falls back to HF)
+- `model.gguf` (~2.1 GB unsloth Gemma 4 E2B QAT mobile UD-Q2_K_XL from HuggingFace — never bundled, exceeds GH's 2 GB per-asset cap)
+- `gemma-4-E2B-it-mmproj.gguf` (~987 MB unsloth mmproj-BF16 — bundled on our release, falls back to HF)
 - `web/index.html` (extracted from the exe via `include_bytes!`)
 - `variant.txt` (cpu / cuda / vulkan)
 
