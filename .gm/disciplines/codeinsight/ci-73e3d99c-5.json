@@ -1,0 +1,8 @@
+src/pipeline.rs:15:21 Job
+pub struct Job {
+    pub input: PathBuf,
+    pub output_dir: PathBuf,
+    pub dpi: u32,
+    pub format: OutputFormat,
+    pub model: String,
+}

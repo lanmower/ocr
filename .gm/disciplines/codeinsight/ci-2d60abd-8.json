@@ -1,0 +1,14 @@
+src/bootstrap.rs:82:94 paths
+pub fn paths() -> Result<Paths> {
+    let root = exe_dir()?.join(".ocr-runtime");
+    let llama_dir = root.join("llama");
+    Ok(Paths {
+        server_exe: llama_dir.join("llama-server.exe"),
+        model: root.join("model.gguf"),
+        mmproj: root.join(MMPROJ_NAME),
+        web_dir: root.join("web"),
+        variant_file: root.join("variant.txt"),
+        llama_dir,
+        root,
+    })
+}

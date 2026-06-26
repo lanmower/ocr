@@ -1,0 +1,10 @@
+src/bootstrap.rs:72:80 Paths
+pub struct Paths {
+    pub root: PathBuf,
+    pub llama_dir: PathBuf,
+    pub server_exe: PathBuf,
+    pub model: PathBuf,
+    pub mmproj: PathBuf,
+    pub web_dir: PathBuf,
+    pub variant_file: PathBuf,
+}

@@ -1,0 +1,4 @@
+src/llm.rs:106:108 process_images_to_csv
+pub fn process_images_to_csv(images: &[DynamicImage], model: &str) -> Result<String> {
+    Ok(to_csv(&process_images_to_json(images, model)?.transactions))
+}

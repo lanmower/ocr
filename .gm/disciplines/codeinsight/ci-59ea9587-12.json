@@ -1,0 +1,4 @@
+src/llm.rs:31:33 default_model_name
+pub fn default_model_name() -> &'static str {
+    DEFAULT_MODEL
+}

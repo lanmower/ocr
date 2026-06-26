@@ -1,0 +1,6 @@
+src/pipeline.rs:23:27 is_pdf
+fn is_pdf(p: &Path) -> bool {
+    p.extension()
+        .map(|e| e.to_ascii_lowercase() == "pdf")
+        .unwrap_or(false)
+}

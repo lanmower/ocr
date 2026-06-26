@@ -1,0 +1,5 @@
+src/bootstrap.rs:67:70 exe_dir
+fn exe_dir() -> Result<PathBuf> {
+    let exe = std::env::current_exe().context("current_exe")?;
+    Ok(exe.parent().context("exe has no parent")?.to_path_buf())
+}

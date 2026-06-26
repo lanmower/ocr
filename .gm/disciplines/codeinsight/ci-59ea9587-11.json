@@ -1,0 +1,6 @@
+src/llm.rs:35:39 encode_image
+fn encode_image(img: &DynamicImage) -> Result<String> {
+    let mut buf = std::io::Cursor::new(Vec::new());
+    img.write_to(&mut buf, image::ImageFormat::Png).context("encode png")?;
+    Ok(base64(buf.get_ref()))
+}

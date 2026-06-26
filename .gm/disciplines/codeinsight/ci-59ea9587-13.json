@@ -1,0 +1,5 @@
+src/llm.rs:26:29 ExtractionResult
+pub struct ExtractionResult {
+    #[serde(default)]
+    pub transactions: Vec<TransactionRecord>,
+}

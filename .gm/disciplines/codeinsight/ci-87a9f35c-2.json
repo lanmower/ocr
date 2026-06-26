@@ -1,0 +1,43 @@
+src/pdf.rs:26:67 ensure_pdfium_dll
+fn ensure_pdfium_dll() -> Result<PathBuf> {
+    let dll_path = pdfium_dll_path()?;
+    if dll_path.exists() {
+        return Ok(dll_path);
+    }
+
+    let temp_path = exe_dir()?.join("pdfium-win-x64.tgz");
+    eprintln!("Downloading Pdfium runtime...");
+
+    let response = ureq::get(PDFIUM_URL)
+        .call()
+        .context("download pdfium archive failed")?;
+    let bytes = response
+        .into_body()
+        .read_to_vec()
+        .context("read pdfium archive failed")?;
+    std::fs::write(&temp_path, &bytes).context("write pdfium archive failed")?;
+
+    let file = File::open(&temp_path).context("open pdfium archive failed")?;
+    let decoder = GzDecoder::new(file);
+    let mut archive = Archive::new(decoder);
+    let mut extracted = false;
+
+    for entry in archive.entries().context("read pdfium archive entries failed")? {
+        let mut entry = entry.context("read pdfium archive entry failed")?;
+        let path = entry.path().context("read pdfium archive path failed")?;
+        if path.as_ref() == Path::new("bin/pdfium.dll") {
+            let mut out = File::create(&dll_path).context("create pdfium.dll failed")?;
+            io::copy(&mut entry, &mut out).context("extract pdfium.dll failed")?;
+            extracted = true;
+            break;
+        }
+    }
+
+    let _ = std::fs::remove_file(&temp_path);
+
+    if !extracted {
+        anyhow::bail!("pdfium.dll not found in downloaded archive");
+    }
+
+    Ok(dll_path)
+}

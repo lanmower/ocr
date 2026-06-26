@@ -30,3 +30,22 @@
   detail: 'User request: host mmproj-google_gemma-4-E2B-it-f16.gguf (~940 MB) and the three llama-server zips (cpu/cuda+cudart/vulkan) as assets on the same ''latest'' GitHub release alongside ocr.exe. Model gguf is 3.3 GB — exceeds 2 GB per-asset cap, so model still pulled from HuggingFace. CI downloads the upstream files, attaches to release. ocr.exe''s bootstrap prefers our release URL for mmproj + llama-server zips (faster + stable URLs) and falls back to upstream if 404. Witness: release page shows ocr.exe + mmproj.gguf + llama-cpu.zip + llama-cuda.zip + cudart.zip + llama-vulkan.zip.'
   id: item-1779459751922
   status: pending
+- id: qat-1
+  title: Swap MODEL_URL + mmproj constants in bootstrap.rs
+  detail: 'src/bootstrap.rs:10-14. MODEL_URL -> https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf . MMPROJ_NAME -> gemma-4-E2B-it-mmproj.gguf . MMPROJ_UPSTREAM -> https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B-it-mmproj.gguf . Witness: codesearch/Read shows new constants compile (cargo check).'
+  status: completed
+  witness: src/bootstrap.rs:10-14 now MODEL_URL=google/gemma-4-E2B-it-qat-q4_0-gguf/gemma-4-E2B_q4_0-it.gguf, MMPROJ_NAME=gemma-4-E2B-it-mmproj.gguf; cargo check exit 0 (18.90s Finished)
+- id: qat-2
+  title: Update release.yml mmproj asset name + URL
+  detail: '.github/workflows/release.yml:25 and :44 reference mmproj-google_gemma-4-E2B-it-f16.gguf from bartowski. Update both to gemma-4-E2B-it-mmproj.gguf from google/gemma-4-E2B-it-qat-q4_0-gguf. Witness: Read shows new name in both download map and upload list.'
+  status: completed
+  witness: .github/workflows/release.yml:25 download map and :44 upload list both now gemma-4-E2B-it-mmproj.gguf from google qat repo
+- id: qat-3
+  title: Update AGENTS.md mmproj filename reference
+  detail: 'AGENTS.md:9 names mmproj-google_gemma-4-E2B-it-f16.gguf (~940 MB). Update to gemma-4-E2B-it-mmproj.gguf (~987 MB) and note model is now official Google QAT q4_0. Witness: Read shows updated line.'
+  status: completed
+  witness: AGENTS.md:8-9 now names gemma-4-E2B-it-mmproj.gguf (~987 MB) and official Google QAT q4_0 model
+- id: qat-4
+  title: cargo check + git_finalize the swap
+  detail: 'Build clean (cargo check) to witness new constants compile, then commit+push. Witness: cargo check exit 0; branch_status ahead==0.'
+  status: pending

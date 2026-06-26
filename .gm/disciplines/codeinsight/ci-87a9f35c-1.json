@@ -1,0 +1,12 @@
+src/pdf.rs:69:79 bind_pdfium
+fn bind_pdfium() -> Result<Pdfium> {
+    PDFIUM
+        .get_or_try_init(|| {
+            let dll_path = ensure_pdfium_dll()?;
+            let bindings = Pdfium::bind_to_library(&dll_path)
+                .or_else(|_| Pdfium::bind_to_system_library())
+                .context("bind to pdfium library failed")?;
+            Ok(Pdfium::new(bindings))
+        })
+        .cloned()
+}

@@ -1,0 +1,19 @@
+src/llm.rs:71:88 extract_json
+fn extract_json(raw: &str) -> String {
+    let s = strip_think(raw.trim()).trim().trim_start_matches("```json").trim_start_matches("```").trim_end_matches("```").trim();
+    let bytes = s.as_bytes();
+    let mut start = None;
+    let mut depth = 0usize;
+    let mut in_str = false;
+    let mut esc = false;
+    for (i, b) in bytes.iter().enumerate() {
+        match *b {
+            b'\\' if in_str => esc = !esc,
+            b'"' if !esc => in_str = !in_str,
+            b'{' if !in_str => { if start.is_none() { start = Some(i); } depth += 1; }
+            b'}' if !in_str => { if depth > 0 { depth -= 1; if depth == 0 { if let Some(st) = start { return s[st..=i].to_string(); } } } }
+            _ => esc = false,
+        }
+    }
+    s.to_string()
+}

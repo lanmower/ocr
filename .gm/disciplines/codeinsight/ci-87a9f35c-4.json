@@ -1,0 +1,7 @@
+src/pdf.rs:15:20 exe_dir
+fn exe_dir() -> Result<PathBuf> {
+    let exe = std::env::current_exe().context("resolve current executable")?;
+    exe.parent()
+        .map(Path::to_path_buf)
+        .context("resolve executable directory")
+}

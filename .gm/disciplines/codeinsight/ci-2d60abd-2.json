@@ -1,0 +1,17 @@
+src/bootstrap.rs:263:278 spawn_server
+pub fn spawn_server(p: &Paths, variant: Variant) -> Result<Child> {
+    eprintln!("[bootstrap] starting llama-server ({}) -ngl {}", variant.as_str(), variant.ngl());
+    let child = Command::new(&p.server_exe)
+        .arg("-m").arg(&p.model)
+        .arg("--mmproj").arg(&p.mmproj)
+        .arg("--host").arg("127.0.0.1")
+        .arg("--port").arg("8080")
+        .arg("-ngl").arg(variant.ngl())
+        .arg("-rea").arg("off")
+        .arg("--path").arg(&p.web_dir)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .spawn()
+        .with_context(|| format!("spawn {}", p.server_exe.display()))?;
+    Ok(child)
+}

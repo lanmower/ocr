@@ -1,0 +1,10 @@
+src/main.rs:33:41 parse_format
+fn parse_format(s: &str) -> Result<pipeline::OutputFormat, String> {
+    match s.to_lowercase().as_str() {
+        "csv" => Ok(pipeline::OutputFormat::Csv),
+        "json" => Ok(pipeline::OutputFormat::Json),
+        "text" | "txt" => Ok(pipeline::OutputFormat::Text),
+        "describe" => Ok(pipeline::OutputFormat::Describe),
+        _ => Err(format!("unknown format: {}, use csv, json, text or describe", s)),
+    }
+}

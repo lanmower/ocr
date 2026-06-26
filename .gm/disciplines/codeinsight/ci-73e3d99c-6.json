@@ -1,0 +1,7 @@
+src/pipeline.rs:8:13 OutputFormat
+pub enum OutputFormat {
+    Csv,
+    Text,
+    Json,
+    Describe,
+}

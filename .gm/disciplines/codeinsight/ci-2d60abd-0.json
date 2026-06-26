@@ -1,0 +1,9 @@
+src/bootstrap.rs:295:302 ensure_running
+pub fn ensure_running() -> Result<Child> {
+    let variant = detect_variant();
+    eprintln!("[bootstrap] detected GPU variant: {}", variant.as_str());
+    let p = ensure_runtime(variant)?;
+    let child = spawn_server(&p, variant)?;
+    wait_healthy(Duration::from_secs(300))?;
+    Ok(child)
+}

@@ -1,0 +1,43 @@
+src/main.rs:43:84 main
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+
+    let mut server = bootstrap::ensure_running()?;
+
+    if cli.input.is_none() || cli.serve {
+        eprintln!();
+        eprintln!("==============================================");
+        eprintln!("  Webcam chat UI ready at: http://127.0.0.1:8080/");
+        eprintln!("  Press Ctrl-C to stop.");
+        eprintln!("==============================================");
+        let _ = server.wait();
+        return Ok(());
+    }
+
+    let input = cli.input.expect("checked above");
+    let inputs = pipeline::collect_inputs(&input);
+    if inputs.is_empty() {
+        let _ = server.kill();
+        anyhow::bail!("no PDF or image files found in {}", input.display());
+    }
+
+    eprintln!("Processing {} files...", inputs.len());
+    let results = pipeline::run_batch(
+        inputs,
+        &cli.output,
+        cli.dpi,
+        cli.format,
+        &cli.model,
+    );
+
+    let ok = results.iter().filter(|r| r.is_ok()).count();
+    let err = results.iter().filter(|r| r.is_err()).count();
+    eprintln!("Done: {} succeeded, {} failed", ok, err);
+
+    let _ = server.kill();
+
+    if err > 0 {
+        std::process::exit(1);
+    }
+    Ok(())
+}

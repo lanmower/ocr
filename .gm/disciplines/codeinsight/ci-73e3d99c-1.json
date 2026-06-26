@@ -1,0 +1,40 @@
+src/pipeline.rs:46:84 process_one
+fn process_one(job: &Job) -> Result<PathBuf> {
+    let stem = job.input.file_stem().unwrap().to_string_lossy();
+    let ext = match job.format {
+        OutputFormat::Csv => "csv",
+        OutputFormat::Text => "txt",
+        OutputFormat::Json => "json",
+        OutputFormat::Describe => "txt",
+    };
+    let out_path = job.output_dir.join(format!("{}.{}", stem, ext));
+
+    let images = if is_pdf(&job.input) {
+        pdf::render_pages(&job.input, job.dpi)?
+    } else {
+        let img = image::open(&job.input)
+            .context(format!("open image: {}", job.input.display()))?;
+        vec![img]
+    };
+
+    let mut file = std::fs::File::create(&out_path)?;
+    match job.format {
+        OutputFormat::Csv => {
+            let csv = llm::process_images_to_csv(&images, &job.model)?;
+            std::io::Write::write_all(&mut file, csv.as_bytes())?;
+        }
+        OutputFormat::Text => {
+            llm::write_text(&images, &mut file)?;
+        }
+        OutputFormat::Describe => {
+            let text = llm::process_images_to_describe(&images, &job.model)?;
+            std::io::Write::write_all(&mut file, text.as_bytes())?;
+        }
+        OutputFormat::Json => {
+            let result = llm::process_images_to_json(&images, &job.model)?;
+            serde_json::to_writer_pretty(&mut file, &result)?;
+        }
+    }
+
+    Ok(out_path)
+}

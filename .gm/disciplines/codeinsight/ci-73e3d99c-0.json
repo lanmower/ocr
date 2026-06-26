@@ -1,0 +1,30 @@
+src/pipeline.rs:86:114 run_batch
+pub fn run_batch(
+    inputs: Vec<PathBuf>,
+    output_dir: &Path,
+    dpi: u32,
+    format: OutputFormat,
+    model: &str,
+) -> Vec<Result<PathBuf>> {
+    let model = model.to_string();
+    std::fs::create_dir_all(output_dir).ok();
+
+    inputs
+        .iter()
+        .map(|input| {
+            let job = Job {
+                input: input.clone(),
+                output_dir: output_dir.to_path_buf(),
+                dpi,
+                format: format.clone(),
+                model: model.clone(),
+            };
+            let result = process_one(&job);
+            match &result {
+                Ok(p) => eprintln!("[ok] {} -> {}", input.display(), p.display()),
+                Err(e) => eprintln!("[err] {}: {:#}", input.display(), e),
+            }
+            result
+        })
+        .collect()
+}

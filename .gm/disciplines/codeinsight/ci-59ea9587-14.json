@@ -1,0 +1,7 @@
+src/llm.rs:18:23 TransactionRecord
+pub struct TransactionRecord {
+    pub date: TransactionField,
+    pub description: TransactionField,
+    pub amount: TransactionField,
+    pub balance: TransactionField,
+}

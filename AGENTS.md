@@ -5,8 +5,8 @@
 `ocr.exe` is a self-contained Windows binary. On first run it populates `<exe-dir>/.ocr-runtime/`:
 
 - `llama/llama-server.exe` (+ DLLs from the variant zip, + cudart DLLs if CUDA)
-- `model.gguf` (~3.3 GB from HuggingFace — never bundled, exceeds GH's 2 GB per-asset cap)
-- `mmproj-google_gemma-4-E2B-it-f16.gguf` (~940 MB — bundled on our release, falls back to HF)
+- `model.gguf` (~3.3 GB official Google Gemma 4 E2B QAT q4_0 from HuggingFace — never bundled, exceeds GH's 2 GB per-asset cap)
+- `gemma-4-E2B-it-mmproj.gguf` (~987 MB — bundled on our release, falls back to HF)
 - `web/index.html` (extracted from the exe via `include_bytes!`)
 - `variant.txt` (cpu / cuda / vulkan)
 
@@ -28,3 +28,5 @@ GPU variant detection lives in `src/bootstrap.rs::detect_variant` — PowerShell
 ## Toolchain note
 
 Build cleanly requires the MSVC toolchain — the windows-gnu toolchain on a typical dev box can struggle to link `ring` (transitive via `ureq` → `rustls`). CI uses MSVC.
+
+@.gm/next-step.md

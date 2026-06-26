@@ -1,0 +1,6 @@
+src/bootstrap.rs:19:23 Variant
+pub enum Variant {
+    Cpu,
+    Cuda,
+    Vulkan,
+}

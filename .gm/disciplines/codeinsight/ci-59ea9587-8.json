@@ -1,0 +1,4 @@
+src/llm.rs:63:65 describe_prompt
+fn describe_prompt() -> &'static str {
+    "Describe every possible detail in this image. Include all visible text, objects, colors, spatial layout, numbers, context, and any other observable information. Be thorough and precise."
+}

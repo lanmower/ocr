@@ -1,0 +1,26 @@
+src/llm.rs:145:169 process_images_to_describe
+pub fn process_images_to_describe(images: &[DynamicImage], model: &str) -> Result<String> {
+    let content: Vec<serde_json::Value> = std::iter::once(serde_json::json!({"type": "text", "text": describe_prompt()}))
+        .chain(images.iter().map(|img| -> Result<serde_json::Value> {
+            Ok(serde_json::json!({"type": "image_url", "image_url": {"url": format!("data:image/png;base64,{}", encode_image(img)?)}}))
+        }).collect::<Result<Vec<_>>>()?.into_iter())
+        .collect();
+    let body = serde_json::json!({
+        "model": model,
+        "messages": [{"role": "user", "content": content}],
+        "stream": false
+    });
+    let host = std::env::var("LLAMA_HOST").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
+    eprintln!("[llm] calling llama-server at {} with {} image(s) [describe]", host, images.len());
+    let mut resp = ureq::post(&format!("http://{}/v1/chat/completions", host))
+        .send_json(&body)
+        .context("llama-server request")?;
+    let raw = resp.body_mut().read_to_string().context("read llama-server response")?;
+    let obj: serde_json::Value = serde_json::from_str(&raw)
+        .with_context(|| format!("parse llama-server response: {}", &raw[..raw.len().min(200)]))?;
+    let msg = &obj["choices"][0]["message"];
+    let text = msg["content"].as_str()
+        .or_else(|| msg["reasoning_content"].as_str())
+        .with_context(|| format!("missing content field: {}", &raw[..raw.len().min(200)]))?;
+    Ok(strip_think(text).trim().to_string())
+}

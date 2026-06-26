@@ -1,0 +1,15 @@
+src/bootstrap.rs:280:293 wait_healthy
+pub fn wait_healthy(timeout: Duration) -> Result<()> {
+    let start = std::time::Instant::now();
+    eprintln!("[bootstrap] waiting for llama-server /health ...");
+    while start.elapsed() < timeout {
+        if let Ok(resp) = ureq::get("http://127.0.0.1:8080/health").call() {
+            if resp.status().is_success() {
+                eprintln!("[bootstrap] llama-server is ready");
+                return Ok(());
+            }
+        }
+        std::thread::sleep(Duration::from_millis(1000));
+    }
+    Err(anyhow!("llama-server did not become healthy within {:?}", timeout))
+}

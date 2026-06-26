@@ -1,0 +1,9 @@
+src/pipeline.rs:37:44 collect_inputs
+pub fn collect_inputs(dir: &Path) -> Vec<PathBuf> {
+    WalkDir::new(dir)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .map(|e| e.into_path())
+        .filter(|p| is_pdf(p) || is_image(p))
+        .collect()
+}

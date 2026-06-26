@@ -1,0 +1,7 @@
+src/llm.rs:138:143 write_text
+pub fn write_text(images: &[DynamicImage], w: &mut impl Write) -> Result<()> {
+    for (i, _) in images.iter().enumerate() {
+        writeln!(w, "[page {}]", i + 1)?;
+    }
+    Ok(())
+}

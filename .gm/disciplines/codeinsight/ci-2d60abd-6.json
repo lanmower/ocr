@@ -1,0 +1,14 @@
+src/bootstrap.rs:126:138 try_download
+fn try_download(urls: &[&str], dest: &Path, label: &str) -> Result<()> {
+    let mut last: Option<anyhow::Error> = None;
+    for url in urls {
+        match download(url, dest, label) {
+            Ok(()) => return Ok(()),
+            Err(e) => {
+                eprintln!("[bootstrap]   failed {url}: {e}");
+                last = Some(e);
+            }
+        }
+    }
+    Err(last.unwrap_or_else(|| anyhow!("no urls")))
+}

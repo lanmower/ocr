@@ -1,0 +1,22 @@
+src/bootstrap.rs:45:65 detect_variant
+pub fn detect_variant() -> Variant {
+    let out = Command::new("powershell")
+        .args([
+            "-NoProfile",
+            "-Command",
+            "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name",
+        ])
+        .output();
+    let names = match out {
+        Ok(o) => String::from_utf8_lossy(&o.stdout).to_string(),
+        Err(_) => String::new(),
+    };
+    let low = names.to_lowercase();
+    if low.contains("nvidia") {
+        Variant::Cuda
+    } else if low.contains("amd") || low.contains("radeon") || low.contains("intel arc") {
+        Variant::Vulkan
+    } else {
+        Variant::Cpu
+    }
+}

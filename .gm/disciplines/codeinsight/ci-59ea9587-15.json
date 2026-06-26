@@ -1,0 +1,8 @@
+src/llm.rs:9:15 TransactionField
+pub struct TransactionField {
+    pub value: Option<String>,
+    #[serde(default)]
+    pub confidence: f32,
+    #[serde(default)]
+    pub source: String,
+}

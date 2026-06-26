@@ -1,0 +1,21 @@
+src/main.rs:12:31 Cli
+struct Cli {
+    #[arg(short, long)]
+    input: Option<PathBuf>,
+
+    #[arg(short, long, default_value = "./output")]
+    output: PathBuf,
+
+    #[arg(long, default_value = "300")]
+    dpi: u32,
+
+    #[arg(long, default_value = "text", value_parser = parse_format)]
+    format: pipeline::OutputFormat,
+
+    #[arg(long, default_value = llm::default_model_name())]
+    model: String,
+
+    /// Keep llama-server running in foreground (default when no --input given)
+    #[arg(long)]
+    serve: bool,
+}

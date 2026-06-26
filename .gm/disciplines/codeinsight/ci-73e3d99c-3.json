@@ -1,0 +1,8 @@
+src/pipeline.rs:29:35 is_image
+fn is_image(p: &Path) -> bool {
+    let exts = ["png", "jpg", "jpeg", "tiff", "tif", "bmp", "webp"];
+    p.extension()
+        .and_then(|e| e.to_str())
+        .map(|e| exts.contains(&e.to_ascii_lowercase().as_str()))
+        .unwrap_or(false)
+}

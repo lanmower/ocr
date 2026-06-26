@@ -1,0 +1,4 @@
+src/llm.rs:59:61 prompt
+fn prompt() -> &'static str {
+    "Extract every transaction from this bank statement. Return only valid JSON: {\"transactions\": [{\"date\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"description\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"amount\": {\"value\": string|null, \"confidence\": number, \"source\": string}, \"balance\": {\"value\": string|null, \"confidence\": number, \"source\": string}}]}. Extract only transaction rows. Keep values exactly as shown. Null for missing. Confidence 0.0-1.0."
+}

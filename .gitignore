@@ -44,3 +44,4 @@ llama-server.log
 .plugkit-browser-profile-*/
 .plugkit-agent-worktree/
 *.stackdump
+.gm/pw-sock-*/

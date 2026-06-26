@@ -1,0 +1,4 @@
+src/llm.rs:90:92 csv_escape
+fn csv_escape(v: &str) -> String {
+    if v.contains([',', '"', '\n']) { format!("\"{}\"", v.replace('"', "\"\"")) } else { v.to_string() }
+}

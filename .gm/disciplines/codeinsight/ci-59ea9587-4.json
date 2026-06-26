@@ -1,0 +1,12 @@
+src/llm.rs:94:104 to_csv
+fn to_csv(records: &[TransactionRecord]) -> String {
+    let mut out = String::from("date,description,amount,balance\n");
+    for r in records {
+        out.push_str(&format!("{},{},{},{}\n",
+            csv_escape(r.date.value.as_deref().unwrap_or("")),
+            csv_escape(r.description.value.as_deref().unwrap_or("")),
+            csv_escape(r.amount.value.as_deref().unwrap_or("")),
+            csv_escape(r.balance.value.as_deref().unwrap_or(""))));
+    }
+    out
+}

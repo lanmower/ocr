@@ -1,0 +1,4 @@
+src/pdf.rs:22:24 pdfium_dll_path
+fn pdfium_dll_path() -> Result<PathBuf> {
+    Ok(exe_dir()?.join("pdfium.dll"))
+}

@@ -1,0 +1,25 @@
+src/bootstrap.rs:140:163 extract_zip
+fn extract_zip(zip_path: &Path, dest: &Path) -> Result<()> {
+    eprintln!("[bootstrap] extracting {} -> {}", zip_path.display(), dest.display());
+    fs::create_dir_all(dest).ok();
+    let file = fs::File::open(zip_path).context("open zip")?;
+    let mut zip = zip::ZipArchive::new(file).context("zip archive")?;
+    for i in 0..zip.len() {
+        let mut entry = zip.by_index(i).context("zip entry")?;
+        let rel = match entry.enclosed_name() {
+            Some(p) => p.to_path_buf(),
+            None => continue,
+        };
+        let out_path = dest.join(&rel);
+        if entry.is_dir() {
+            fs::create_dir_all(&out_path).ok();
+            continue;
+        }
+        if let Some(parent) = out_path.parent() {
+            fs::create_dir_all(parent).ok();
+        }
+        let mut out = fs::File::create(&out_path).with_context(|| format!("create {}", out_path.display()))?;
+        std::io::copy(&mut entry, &mut out).context("copy zip entry")?;
+    }
+    Ok(())
+}

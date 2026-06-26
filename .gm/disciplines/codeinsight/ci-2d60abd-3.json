@@ -1,0 +1,63 @@
+src/bootstrap.rs:200:261 ensure_runtime
+pub fn ensure_runtime(variant: Variant) -> Result<Paths> {
+    let p = paths()?;
+    fs::create_dir_all(&p.root).ok();
+    fs::create_dir_all(&p.llama_dir).ok();
+    fs::create_dir_all(&p.web_dir).ok();
+
+    // Web assets (always overwrite — embedded copy is canonical)
+    fs::write(p.web_dir.join("index.html"), WEB_INDEX).context("write web/index.html")?;
+
+    // Variant marker
+    fs::write(&p.variant_file, variant.as_str()).context("write variant.txt")?;
+
+    // llama-server
+    if !p.server_exe.exists() {
+        let zip_name = variant.llama_zip_name();
+        let zip_path = p.llama_dir.join(zip_name);
+        let urls = [
+            format!("{RELEASE_BASE}/{zip_name}"),
+            format!("{UPSTREAM_LLAMA}/{zip_name}"),
+        ];
+        let url_refs: Vec<&str> = urls.iter().map(|s| s.as_str()).collect();
+        try_download(&url_refs, &zip_path, &format!("llama-{}", variant.as_str()))?;
+        extract_zip(&zip_path, &p.llama_dir)?;
+        fs::remove_file(&zip_path).ok();
+
+        if variant == Variant::Cuda {
+            let cudart = "cudart-llama-bin-win-cuda-12.4-x64.zip";
+            let cudart_path = p.llama_dir.join(cudart);
+            let urls = [
+                format!("{RELEASE_BASE}/{cudart}"),
+                format!("{UPSTREAM_LLAMA}/{cudart}"),
+            ];
+            let url_refs: Vec<&str> = urls.iter().map(|s| s.as_str()).collect();
+            try_download(&url_refs, &cudart_path, "cudart")?;
+            extract_zip(&cudart_path, &p.llama_dir)?;
+            fs::remove_file(&cudart_path).ok();
+        }
+
+        flatten_llama_dir(&p.llama_dir)?;
+    }
+
+    if !p.server_exe.exists() {
+        return Err(anyhow!("llama-server.exe still missing after extract"));
+    }
+
+    // mmproj
+    if !p.mmproj.exists() {
+        let urls = [
+            format!("{RELEASE_BASE}/{MMPROJ_NAME}"),
+            MMPROJ_UPSTREAM.to_string(),
+        ];
+        let url_refs: Vec<&str> = urls.iter().map(|s| s.as_str()).collect();
+        try_download(&url_refs, &p.mmproj, "mmproj")?;
+    }
+
+    // Model — only HuggingFace; too big for our release
+    if !p.model.exists() {
+        download(MODEL_URL, &p.model, "model")?;
+    }
+
+    Ok(p)
+}

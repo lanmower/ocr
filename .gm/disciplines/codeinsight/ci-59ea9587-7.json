@@ -1,0 +1,4 @@
+src/llm.rs:67:69 strip_think
+fn strip_think(s: &str) -> &str {
+    if let Some(end) = s.find("</think>") { &s[end + 8..] } else { s }
+}
